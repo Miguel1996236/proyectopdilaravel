@@ -7,252 +7,152 @@
 
     <title>@yield('title', config('app.name', 'Sistema de Encuestas'))</title>
 
-    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
-    <link href="{{ asset('assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/css/tailadmin.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
 @php
     $user = auth()->user();
     $role = $user?->role;
+    $navigation = [
+        [
+            'label' => __('Dashboard'),
+            'route' => route('dashboard'),
+            'active' => request()->routeIs('dashboard'),
+        ],
+        [
+            'label' => __('Encuestas'),
+            'route' => route('quizzes.index'),
+            'active' => request()->routeIs('quizzes.*'),
+            'visible' => in_array($role, [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_TEACHER]),
+        ],
+        [
+            'label' => __('Reportes'),
+            'route' => route('reports.summary'),
+            'active' => request()->routeIs('reports.*'),
+            'visible' => in_array($role, [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_TEACHER]),
+        ],
+        [
+            'label' => __('Usuarios'),
+            'route' => route('admin.users.index'),
+            'active' => request()->routeIs('admin.users.*'),
+            'visible' => $role === \App\Models\User::ROLE_ADMIN,
+        ],
+        [
+            'label' => __('Ingresar código'),
+            'route' => route('surveys.access.form'),
+            'active' => request()->routeIs('surveys.access.*'),
+            'visible' => $role === \App\Models\User::ROLE_STUDENT,
+        ],
+    ];
 @endphp
-<body id="page-top">
-    <div id="wrapper">
-        <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('dashboard') }}">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-clipboard-list"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">{{ config('app.name', 'Sistema') }}</div>
-            </a>
+<body class="bg-gray-50 font-sans antialiased" x-data="{ sidebarOpen: false }">
+    <div class="min-h-screen flex">
+        <div class="fixed inset-0 z-40 bg-gray-900/50 lg:hidden" x-show="sidebarOpen" x-transition @click="sidebarOpen = false"></div>
 
-            <hr class="sidebar-divider my-0">
-
-            <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('dashboard') }}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li>
-
-            <hr class="sidebar-divider">
-
-            <div class="sidebar-heading">
-                Gestión
+        <aside class="fixed inset-y-0 left-0 z-50 w-72 transform bg-white border-r border-gray-200 shadow-lg lg:static lg:translate-x-0 lg:w-72"
+            x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0"
+            x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full"
+            :class="{'-translate-x-full lg:translate-x-0': !sidebarOpen, 'translate-x-0': sidebarOpen}">
+            <div class="flex items-center justify-between px-6 h-16 border-b border-gray-200">
+                <a href="{{ route('dashboard') }}" class="text-lg font-semibold tracking-wide text-gray-900">
+                    {{ config('app.name', 'TailAdmin') }}
+                </a>
+                <button class="lg:hidden text-gray-500 hover:text-gray-700" @click="sidebarOpen = false">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
+            <nav class="flex-1 overflow-y-auto px-4 py-6 custom-scrollbar">
+                <div class="space-y-4">
+                    @foreach ($navigation as $item)
+                        @continue(isset($item['visible']) && ! $item['visible'])
+                        <a href="{{ $item['route'] }}"
+                           class="flex items-center justify-between gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition
+                                {{ $item['active'] ? 'bg-brand-50 text-brand-600 border border-brand-100' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <span>{{ $item['label'] }}</span>
+                            @if ($item['active'])
+                                <span class="inline-flex h-2 w-2 rounded-full bg-brand-500"></span>
+                            @endif
+                        </a>
+                    @endforeach
+                </div>
+            </nav>
+            <div class="px-6 pb-6">
+                <div class="rounded-2xl bg-brand-50 p-4 text-sm text-brand-700">
+                    <p class="font-semibold mb-1">{{ __('¿Necesitas ayuda?') }}</p>
+                    <p class="text-brand-600">{{ __('Revisa la documentación o ponte en contacto con el administrador.') }}</p>
+                </div>
+            </div>
+        </aside>
 
-            @if ($role === \App\Models\User::ROLE_ADMIN)
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
-                        <i class="fas fa-fw fa-users"></i>
-                        <span>Usuarios</span></a>
-                </li>
-            @endif
-
-            @if (in_array($role, [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_TEACHER]))
-                <li class="nav-item {{ request()->routeIs('quizzes.*') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('quizzes.index') }}">
-                        <i class="fas fa-fw fa-file-alt"></i>
-                        <span>Encuestas</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('quizzes.index') }}#invitations">
-                        <i class="fas fa-fw fa-key"></i>
-                        <span>Códigos de Invitación</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('quizzes.index') }}#analysis">
-                        <i class="fas fa-fw fa-brain"></i>
-                        <span>Análisis IA</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReports"
-                        aria-expanded="true" aria-controls="collapseReports">
-                        <i class="fas fa-fw fa-chart-area"></i>
-                        <span>Reportes</span>
-                    </a>
-                    <div id="collapseReports" class="collapse {{ request()->routeIs('reports.*') ? 'show' : '' }}" aria-labelledby="headingReports" data-parent="#accordionSidebar">
-                        <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Reportes:</h6>
-                            <a class="collapse-item {{ request()->routeIs('reports.summary') ? 'active' : '' }}" href="{{ route('reports.summary') }}">Resumen</a>
-                            <a class="collapse-item {{ request()->routeIs('reports.students') ? 'active' : '' }}" href="{{ route('reports.students') }}">Estudiantes</a>
-                            <a class="collapse-item {{ request()->routeIs('reports.surveys') ? 'active' : '' }}" href="{{ route('reports.surveys') }}">Encuestas</a>
+        <div class="flex-1 min-h-screen flex flex-col lg:ml-72 transition-all duration-200">
+            <header class="sticky top-0 z-30 bg-white border-b border-gray-200">
+                <div class="flex items-center justify-between h-16 px-4 sm:px-6">
+                    <div class="flex items-center gap-3">
+                        <button class="lg:hidden inline-flex items-center justify-center rounded-lg border border-gray-200 p-2 text-gray-600"
+                                @click="sidebarOpen = !sidebarOpen">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5M3.75 12h16.5m-16.5 6.75h16.5"/>
+                            </svg>
+                        </button>
+                        <div>
+                            <p class="text-xs text-gray-500">{{ __('Bienvenido de nuevo') }}</p>
+                            <p class="text-sm font-semibold text-gray-900">{{ $user?->name }}</p>
                         </div>
                     </div>
-                </li>
-            @endif
-
-            @if ($role === \App\Models\User::ROLE_STUDENT)
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-fw fa-list-check"></i>
-                        <span>Mis Encuestas</span></a>
-                </li>
-                <li class="nav-item {{ request()->routeIs('surveys.access.*') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('surveys.access.form') }}">
-                        <i class="fas fa-fw fa-barcode"></i>
-                        <span>Usar Código</span></a>
-                </li>
-            @endif
-
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-        </ul>
-        <!-- End of Sidebar -->
-
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-            <div id="content">
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-
-                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                        <div class="input-group">
-                            <input type="text" class="form-control bg-light border-0 small" placeholder="Buscar..." aria-label="Search" aria-describedby="basic-addon2" readonly>
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button" disabled>
-                                    <i class="fas fa-search fa-sm"></i>
-                                </button>
-                            </div>
+                    <div class="flex items-center gap-4">
+                        <span class="hidden sm:inline-flex items-center gap-2 text-sm text-gray-500 border border-gray-200 rounded-full px-3 py-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>
+                            </svg>
+                            {{ __('Buscar…') }}
+                        </span>
+                        <div class="h-10 w-10 rounded-full bg-brand-500/10 flex items-center justify-center text-brand-600 font-semibold uppercase">
+                            {{ \Illuminate\Support\Str::of($user?->name ?? 'U')->substr(0, 2) }}
                         </div>
-                    </form>
+                    </div>
+                </div>
+            </header>
 
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-bell fa-fw"></i>
-                                <span class="badge badge-danger badge-counter">3+</span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">
-                                    Alertas
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary">
-                                            <i class="fas fa-file-alt text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">Noviembre 8, 2025</div>
-                                        <span class="font-weight-bold">Nueva encuesta disponible.</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Ver todas las alertas</a>
-                            </div>
-                        </li>
-
-                        <div class="topbar-divider d-none d-sm-block"></div>
-
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ $user?->name }}</span>
-                                <img class="img-profile rounded-circle" src="{{ asset('img/undraw_profile.svg') }}" alt="Avatar">
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Perfil
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Configuración
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button class="dropdown-item" type="submit">
-                                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Cerrar sesión
-                                    </button>
-                                </form>
-                            </div>
-                        </li>
-                    </ul>
-                </nav>
-                <!-- End of Topbar -->
-
-                <div class="container-fluid">
+            <main class="flex-1">
+                <div class="mx-auto w-full max-w-screen-2xl px-4 py-6 sm:px-6 lg:px-8">
                     @if (session('status'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="fas fa-check-circle mr-2"></i>{{ session('status') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <div class="mb-6 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                            {{ session('status') }}
                         </div>
                     @endif
 
                     @if ($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong>{{ __('Se encontraron algunos problemas:') }}</strong>
-                            <ul class="mb-0 mt-2">
+                        <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                            <p class="font-semibold mb-2">{{ __('Se encontraron algunos problemas:') }}</p>
+                            <ul class="list-disc list-inside space-y-1">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
                         </div>
                     @endif
 
-                    @isset($header)
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                            <h1 class="h3 mb-0 text-gray-800">{{ $header }}</h1>
-                            @yield('header-actions')
-                        </div>
-                    @endisset
-
                     {{ $slot }}
                 </div>
-            </div>
+            </main>
 
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; {{ config('app.name', 'Sistema de Encuestas') }} {{ now()->year }}</span>
-                    </div>
+            <footer class="border-t border-gray-200 bg-white">
+                <div class="mx-auto flex max-w-screen-2xl items-center justify-between px-4 py-4 sm:px-6">
+                    <p class="text-xs text-gray-500">
+                        &copy; {{ now()->year }} {{ config('app.name', 'Sistema de Encuestas') }}. {{ __('Todos los derechos reservados.') }}
+                    </p>
+                    <a href="https://tailadmin.com" target="_blank" rel="noopener"
+                       class="text-xs font-medium text-brand-500 hover:text-brand-600 transition">
+                        TailAdmin Template
+                    </a>
                 </div>
             </footer>
         </div>
     </div>
 
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <div class="modal fade" id="globalLoaderModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-body text-center py-5">
-                    <div class="spinner-border text-primary mb-3" role="status">
-                        <span class="sr-only">{{ __('Cargando...') }}</span>
-                    </div>
-                    <p class="mb-0 text-muted">{{ __('Procesando, por favor espera...') }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-    <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
-    <script>
-        (function ($) {
-            $(document).on('submit', 'form.js-show-loader', function () {
-                $('#globalLoaderModal').modal('show');
-            });
-        })(jQuery);
-    </script>
     <script src="{{ \ArielMejiaDev\LarapexCharts\LarapexChart::cdn() }}"></script>
     @stack('scripts')
 </body>

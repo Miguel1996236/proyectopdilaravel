@@ -216,6 +216,11 @@ class QuizController extends Controller
             'quantitativeInsights' => $quantitativeInsights,
             'qualitativeInsights' => $qualitativeInsights,
             'analysisCharts' => $this->buildAnalysisCharts($chartConfigs),
+            'basicProgress' => [
+                'label' => __('Progreso (0 - 100)'),
+                'value' => 50,
+                'max' => 100,
+            ],
         ]);
     }
 

@@ -19,6 +19,72 @@
     </div>
 
     @if ($analysis)
+        @if (! empty($basicProgress))
+            @push('styles')
+                <style>
+                    .basic-progress-card .progress-track {
+                        position: relative;
+                        background: #e9ecef;
+                        border-radius: 18px;
+                        height: 36px;
+                        overflow: hidden;
+                    }
+
+                    .basic-progress-card .progress-fill {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        bottom: 0;
+                        background: #4e73df;
+                        border-radius: inherit;
+                        transition: width 0.4s ease;
+                    }
+
+                    .basic-progress-card .progress-label {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        color: #1f2933;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 0.95rem;
+                    }
+                </style>
+            @endpush
+
+            @php
+                $percentage = min(100, max(0, ($basicProgress['value'] / max(1, $basicProgress['max'])) * 100));
+            @endphp
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">{{ $basicProgress['label'] ?? __('Progreso') }}</h6>
+                    <span class="text-muted small d-block mt-1">{{ __('Visualización 0-100 generada sin librerías externas.') }}</span>
+                </div>
+                <div class="card-body basic-progress-card">
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: {{ $percentage }}%;"></div>
+                        <div class="progress-label">{{ $basicProgress['value'] }} / {{ $basicProgress['max'] }}</div>
+                    </div>
+                    <p class="small text-muted mb-0 mt-3">{{ __('Barra dibujada con HTML y CSS nativo (0-100).') }}</p>
+                </div>
+            </div>
+        @endif
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{{ __('Distribución de respuestas (demo)') }}</h6>
+                <span class="text-muted small d-block mt-1">{{ __('Gráfico renderizado con ApexCharts para verificar integración.') }}</span>
+            </div>
+            <div class="card-body">
+                <div id="apex-test-chart" style="height: 320px;"></div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-lg-8 mb-4">
                 <div class="card shadow">
@@ -156,4 +222,49 @@
             {!! $chartEntry['chart']->script() !!}
         @endforeach
     @endif
+    <script>
+        (function () {
+            function renderApexDemo() {
+                if (typeof window.ApexCharts === 'undefined') {
+                    console.warn('[apex-demo] ApexCharts no disponible');
+                    return;
+                }
+
+                const el = document.querySelector('#apex-test-chart');
+                if (!el) {
+                    return;
+                }
+
+                const options = {
+                    chart: {
+                        type: 'bar',
+                        height: 320,
+                        toolbar: { show: false }
+                    },
+                    series: [{
+                        name: '{{ __('Respuestas') }}',
+                        data: [35, 50, 25]
+                    }],
+                    xaxis: {
+                        categories: ['{{ __('Baja') }}', '{{ __('Media') }}', '{{ __('Alta') }}']
+                    },
+                    colors: ['#4e73df'],
+                    dataLabels: {
+                        enabled: true
+                    }
+                };
+
+                const chart = new ApexCharts(el, options);
+                chart.render()
+                    .then(() => console.log('[apex-demo] gráfico renderizado'))
+                    .catch(err => console.error('[apex-demo] error renderizando', err));
+            }
+
+            if (document.readyState === 'complete') {
+                renderApexDemo();
+            } else {
+                window.addEventListener('load', renderApexDemo, { once: true });
+            }
+        })();
+    </script>
 @endpush
