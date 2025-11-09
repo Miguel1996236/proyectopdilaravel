@@ -65,11 +65,13 @@ class ProcessQuizAnalysisJob implements ShouldQueue
                 'max_tokens' => 900,
             ]);
 
-            if (! $response) {
-                throw new \RuntimeException('La respuesta de OpenAI fue vacía.');
+            $content = data_get($response, 'choices.0.message.content');
+
+            if (! is_string($content) || blank($content)) {
+                throw new \RuntimeException('La respuesta de OpenAI no contenía texto utilizable.');
             }
 
-            $decoded = json_decode($response, true);
+            $decoded = json_decode($content, true);
 
             if (! is_array($decoded)) {
                 $decoded = null;
@@ -77,11 +79,11 @@ class ProcessQuizAnalysisJob implements ShouldQueue
 
             $analysis->update([
                 'status' => 'completed',
-                'summary' => Arr::get($decoded, 'summary') ?? $response,
+                'summary' => Arr::get($decoded, 'summary') ?? $content,
                 'recommendations' => Arr::get($decoded, 'recommendations'),
                 'quantitative_insights' => Arr::get($decoded, 'quantitative_insights', $quantitative),
                 'qualitative_themes' => Arr::get($decoded, 'qualitative_themes'),
-                'raw_response' => $decoded ?? ['raw' => $response],
+                'raw_response' => $decoded ?? ['raw' => $content],
                 'completed_at' => now(),
             ]);
 
