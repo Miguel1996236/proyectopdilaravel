@@ -261,31 +261,31 @@ class NotificationManager {
         
         if (notification && notification.datos_extra) {
             const action = notification.datos_extra.action;
-            const cuestionarioId = notification.datos_extra.cuestionario_id;
+            const encuestaId = notification.datos_extra.cuestionario_id;
             const estudianteId = notification.datos_extra.estudiante_id;
             
             switch (action) {
-                case 'ver_cuestionario':
-                    if (cuestionarioId) {
-                        window.location.href = `responder_cuestionario.php?id=${cuestionarioId}`;
+                case 'ver_encuesta':
+                    if (encuestaId) {
+                        window.location.href = `responder_cuestionario.php?id=${encuestaId}`;
                     }
                     break;
                 case 'ver_resultados':
-                    if (cuestionarioId) {
-                        window.location.href = `analisis_cuestionario.php?id=${cuestionarioId}`;
+                    if (encuestaId) {
+                        window.location.href = `analisis_cuestionario.php?id=${encuestaId}`;
                     }
                     break;
                 case 'ver_analisis':
-                    if (cuestionarioId) {
-                        window.location.href = `analisis_cuestionario.php?id=${cuestionarioId}`;
+                    if (encuestaId) {
+                        window.location.href = `analisis_cuestionario.php?id=${encuestaId}`;
                     }
                     break;
                 case 'gestionar_codigos':
                     window.location.href = 'generar_codigos.php';
                     break;
-                case 'responder_cuestionario':
-                    if (cuestionarioId) {
-                        window.location.href = `responder_cuestionario.php?id=${cuestionarioId}`;
+                case 'responder_encuesta':
+                    if (encuestaId) {
+                        window.location.href = `responder_cuestionario.php?id=${encuestaId}`;
                     }
                     break;
             }

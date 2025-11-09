@@ -29,11 +29,11 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Cuestionarios</div>
+                                Encuestas activas</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['surveys'] ?? 0 }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                            <i class="fas fa-poll-h fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Intentos
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Respuestas
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['attempts'] ?? 0 }}</div>
                         </div>
@@ -87,14 +87,14 @@
         <div class="col-xl-8 col-lg-7">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">{{ __('Actividad del sistema') }}</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">{{ __('Actividad en encuestas') }}</h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-area">
                         <canvas id="usageAreaChart"></canvas>
                     </div>
                     <hr>
-                    <p class="text-muted small mb-0">{{ __('Visualiza la evolución semanal de los intentos de cuestionario en la plataforma.') }}</p>
+                    <p class="text-muted small mb-0">{{ __('Visualiza la evolución semanal de las respuestas registradas en la plataforma.') }}</p>
                 </div>
             </div>
         </div>
@@ -169,13 +169,13 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted small mb-3">
-                        {{ __('Este panel replica la plantilla original de SB Admin 2. Sustituye estos textos por métricas, tareas o enlaces directos a tus procesos.') }}
+                        {{ __('Atajos para gestionar encuestas y revisar resultados de satisfacción o diagnóstico.') }}
                     </p>
                     <a href="#" class="btn btn-primary btn-icon-split btn-sm mr-2 mb-2">
                         <span class="icon text-white-50">
                             <i class="fas fa-plus"></i>
                         </span>
-                        <span class="text">{{ __('Nuevo cuestionario') }}</span>
+                        <span class="text">{{ __('Nueva encuesta') }}</span>
                     </a>
                     <a href="#" class="btn btn-success btn-icon-split btn-sm mr-2 mb-2">
                         <span class="icon text-white-50">

@@ -1,59 +1,89 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="280" alt="Laravel Logo">
 </p>
 
-## About Laravel
+# Plataforma de Encuestas Educativas
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Aplicación construida con **Laravel 12** y la plantilla **Start Bootstrap SB Admin 2**, enfocada en la gestión de encuestas, invitaciones y análisis apoyados por OpenAI.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Características principales
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Autenticación Breeze (Blade) con roles `administrador`, `docente` y `estudiante`.
+- Dashboard responsive con tarjetas, gráficos (Chart.js) y sidebar dinámico.
+- Integración con OpenAI centralizada en `App\Services\OpenAIService`.
+- Frontend basado íntegramente en SB Admin 2: login/registro, sidebar, botones, tablas y estilos.
 
-## Learning Laravel
+## 📦 Requisitos
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- PHP 8.2+
+- Composer 2.5+
+- Node.js 18+ y npm
+- MySQL/MariaDB (XAMPP recomendado)
+- Extensiones PHP: `zip`, `openssl`, `pdo`, `mbstring`, `tokenizer`, `xml`, `ctype`, `json`, `fileinfo`, `curl`
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## ⚙️ Instalación rápida
 
-## Laravel Sponsors
+```bash
+git clone <repo> proyectopdilaravel
+cd proyectopdilaravel
+composer install
+npm install
+cp .env.example .env        # o copiar manualmente
+php artisan key:generate
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Edita `.env` para configurar:
 
-### Premium Partners
+```env
+DB_DATABASE=proyectopdi
+DB_USERNAME=root
+DB_PASSWORD=
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+OPENAI_API_KEY=tu_clave
+OPENAI_MODEL_1=gpt-4o-mini
+OPENAI_TEMP_1=0.7
+OPENAI_MAXTOKENS_1=800
+```
 
-## Contributing
+Luego ejecuta:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan migrate --force
+php artisan db:seed
+npm run dev    # o npm run build
+php artisan serve
+```
 
-## Code of Conduct
+## 👥 Accesos de ejemplo
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Rol            | Email                  | Contraseña |
+|----------------|------------------------|------------|
+| Administrador  | admin@example.com      | password   |
+| Docente demo   | docente@example.com    | password   |
+| Estudiante demo| estudiante@example.com | password   |
 
-## Security Vulnerabilities
+## 🗂️ Estructura destacada
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- `resources/views/layouts/` — Layouts SB Admin 2 personalizados.
+- `public/vendor`, `public/js`, `public/assets/css` — Assets originales del template.
+- `app/Services/OpenAIService.php` — Servicio para consumir OpenAI con perfiles configurables.
+- `database/seeders/AdminUserSeeder.php` — Creación de usuarios demo con roles.
 
-## License
+## 🛠️ Scripts útiles
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan migrate:fresh --seed   # Reinicia la BD con datos demo
+php artisan make:controller ...    # Generar controladores adicionales
+npm run dev                        # Recarga assets durante el desarrollo
+```
+
+## ✅ Pendientes sugeridos
+
+- Migrar el esquema completo de encuestas e invitaciones desde el proyecto legacy.
+- Reemplazar enlaces del sidebar por rutas reales.
+- Añadir dashboards específicos para cada rol.
+- Conectar flujos de análisis con OpenAI usando el servicio centralizado.
+
+---
+Desarrollado con ❤️ para apoyar procesos educativos basados en encuestas y análisis inteligente. Ajusta libremente esta base para tus necesidades. Si tienes dudas, revisa el código o contacta al equipo. ¡Éxitos! 🎓
+

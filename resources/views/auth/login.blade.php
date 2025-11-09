@@ -5,7 +5,7 @@
             <div class="p-5">
                 <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">{{ __('Bienvenido de nuevo') }}</h1>
-                    <p class="text-muted small mb-4">{{ __('Inicia sesión para gestionar tus cuestionarios e invitaciones.') }}</p>
+                    <p class="text-muted small mb-4">{{ __('Inicia sesión para gestionar tus encuestas e invitaciones.') }}</p>
                 </div>
 
                 @if (session('status'))

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', config('app.name', 'Sistema de Cuestionarios'))</title>
+    <title>@yield('title', config('app.name', 'Sistema de Encuestas'))</title>
 
     <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
@@ -52,15 +52,15 @@
             @endif
 
             @if (in_array($role, [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_TEACHER]))
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li class="nav-item {{ request()->routeIs('quizzes.*') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('quizzes.index') }}">
                         <i class="fas fa-fw fa-file-alt"></i>
-                        <span>Cuestionarios</span></a>
+                        <span>Encuestas</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">
                         <i class="fas fa-fw fa-key"></i>
-                        <span>Códigos</span></a>
+                        <span>Códigos de Invitación</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">
@@ -78,7 +78,7 @@
                             <h6 class="collapse-header">Reportes:</h6>
                             <a class="collapse-item" href="#">Resumen</a>
                             <a class="collapse-item" href="#">Estudiantes</a>
-                            <a class="collapse-item" href="#">Cuestionarios</a>
+                            <a class="collapse-item" href="#">Encuestas</a>
                         </div>
                     </div>
                 </li>
@@ -88,7 +88,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#">
                         <i class="fas fa-fw fa-list-check"></i>
-                        <span>Mis Cuestionarios</span></a>
+                        <span>Mis Encuestas</span></a>
                 </li>
             @endif
 
@@ -138,7 +138,7 @@
                                     </div>
                                     <div>
                                         <div class="small text-gray-500">Noviembre 8, 2025</div>
-                                        <span class="font-weight-bold">Nuevo cuestionario disponible.</span>
+                                        <span class="font-weight-bold">Nueva encuesta disponible.</span>
                                     </div>
                                 </a>
                                 <a class="dropdown-item text-center small text-gray-500" href="#">Ver todas las alertas</a>
@@ -176,6 +176,29 @@
                 <!-- End of Topbar -->
 
                 <div class="container-fluid">
+                    @if (session('status'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle mr-2"></i>{{ session('status') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>{{ __('Se encontraron algunos problemas:') }}</strong>
+                            <ul class="mb-0 mt-2">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
                     @isset($header)
                         <div class="d-sm-flex align-items-center justify-content-between mb-4">
                             <h1 class="h3 mb-0 text-gray-800">{{ $header }}</h1>
@@ -190,7 +213,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; {{ config('app.name', 'Sistema de Cuestionarios') }} {{ now()->year }}</span>
+                        <span>Copyright &copy; {{ config('app.name', 'Sistema de Encuestas') }} {{ now()->year }}</span>
                     </div>
                 </div>
             </footer>
