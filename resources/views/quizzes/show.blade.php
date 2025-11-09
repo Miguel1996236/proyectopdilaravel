@@ -303,6 +303,64 @@
                                 beginAtZero: true,
                                 precision: 0,
                             },
+                            gridLines: {
+                                color: 'rgb(234, 236, 244)',
+                                zeroLineColor: 'rgb(234, 236, 244)',
+                                drawBorder: false,
+                                borderDash: [2],
+                                zeroLineBorderDash: [2]
+                            }
+                        }],
+                        xAxes: [{
+                            gridLines: { display: false },
+                        }]
+                    },
+                    legend: { display: false },
+                },
+            });
+        }
+
+        const attemptTrendData = @json($attemptTrendChart);
+        const attemptTrendCtx = document.getElementById('attemptTrendChart');
+        if (attemptTrendCtx && attemptTrendData.labels.length) {
+            new Chart(attemptTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: attemptTrendData.labels,
+                    datasets: [{
+                        label: '{{ __('Intentos completados') }}',
+                        lineTension: 0.3,
+                        backgroundColor: 'rgba(28, 200, 138, 0.05)',
+                        borderColor: 'rgba(28, 200, 138, 1)',
+                        pointRadius: 3,
+                        pointBackgroundColor: 'rgba(28, 200, 138, 1)',
+                        pointBorderColor: 'rgba(28, 200, 138, 1)',
+                        pointHoverRadius: 3,
+                        pointHoverBackgroundColor: 'rgba(28, 200, 138, 1)',
+                        pointHoverBorderColor: 'rgba(28, 200, 138, 1)',
+                        pointHitRadius: 10,
+                        pointBorderWidth: 2,
+                        data: attemptTrendData.values,
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        xAxes: [{
+                            gridLines: { display: false, drawBorder: false },
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                precision: 0,
+                            },
+                            gridLines: {
+                                color: 'rgb(234, 236, 244)',
+                                zeroLineColor: 'rgb(234, 236, 244)',
+                                drawBorder: false,
+                                borderDash: [2],
+                                zeroLineBorderDash: [2],
+                            },
                         }],
                     },
                     legend: { display: false },
