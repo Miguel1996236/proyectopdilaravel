@@ -90,6 +90,11 @@
                         <i class="fas fa-fw fa-list-check"></i>
                         <span>Mis Encuestas</span></a>
                 </li>
+                <li class="nav-item {{ request()->routeIs('surveys.access.*') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('surveys.access.form') }}">
+                        <i class="fas fa-fw fa-barcode"></i>
+                        <span>Usar Código</span></a>
+                </li>
             @endif
 
             <hr class="sidebar-divider d-none d-md-block">
