@@ -85,6 +85,8 @@ class QuizController extends Controller
 
         $questionTypeChart = $this->buildQuestionTypeChart($quiz);
         $invitationUsageChart = $this->buildInvitationUsageChart($quiz);
+        $attemptTrendChart = $this->buildAttemptTrendChart($quiz);
+        $questionProgress = $this->buildQuestionProgress($quiz);
 
         $analysisSummary = $this->buildAnalysisSummary($latestAnalysis);
 
@@ -93,6 +95,8 @@ class QuizController extends Controller
             'latestAnalysis' => $latestAnalysis,
             'questionTypeChart' => $questionTypeChart,
             'invitationUsageChart' => $invitationUsageChart,
+            'attemptTrendChart' => $attemptTrendChart,
+            'questionProgress' => $questionProgress,
             'analysisSummary' => $analysisSummary,
         ]);
     }
@@ -312,6 +316,51 @@ class QuizController extends Controller
             ->all();
 
         return compact('labels', 'data');
+    }
+
+    protected function buildAttemptTrendChart(Quiz $quiz): array
+    {
+        $period = \Carbon\CarbonPeriod::create(
+            now()->subDays(6)->startOfDay(),
+            now()->endOfDay()
+        );
+
+        $labels = [];
+        $values = [];
+
+        foreach ($period as $date) {
+            $labels[] = $date->translatedFormat('D d');
+            $values[] = $quiz->attempts
+                ->whereBetween('created_at', [$date->startOfDay(), $date->endOfDay()])
+                ->count();
+        }
+
+        return compact('labels', 'values');
+    }
+
+    protected function buildQuestionProgress(Quiz $quiz): array
+    {
+        $totalQuestions = max(1, $quiz->questions->count());
+
+        return $quiz->questions
+            ->groupBy('type')
+            ->map(function ($questions, $type) use ($totalQuestions) {
+                $typeLabels = [
+                    'multiple_choice' => __('Opción múltiple'),
+                    'multi_select' => __('Selección múltiple'),
+                    'scale' => __('Escala'),
+                    'open_text' => __('Respuesta abierta'),
+                    'numeric' => __('Respuesta numérica'),
+                ];
+
+                return [
+                    'label' => $typeLabels[$type] ?? ucfirst(str_replace('_', ' ', $type)),
+                    'count' => $questions->count(),
+                    'percentage' => round(($questions->count() / $totalQuestions) * 100),
+                ];
+            })
+            ->values()
+            ->all();
     }
 
     protected function buildAnalysisSummary(?QuizAiAnalysis $analysis): array

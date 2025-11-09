@@ -10,6 +10,7 @@ use App\Http\Controllers\SurveyAccessController;
 use App\Http\Controllers\SurveyResponseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 
 Route::get('/', function () {
     return Auth::check()
@@ -30,6 +31,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('quizzes/{quiz}/analysis/export', [QuizController::class, 'exportAnalysis'])->name('quizzes.analysis.export');
     Route::resource('quizzes.questions', QuestionController::class)->except(['index', 'show']);
     Route::resource('quizzes.invitations', QuizInvitationController::class)->only(['store', 'update', 'destroy']);
+
+    Route::resource('admin/users', AdminUserController::class)->except(['show'])->names('admin.users');
 
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('summary', [ReportsController::class, 'summary'])->name('summary');

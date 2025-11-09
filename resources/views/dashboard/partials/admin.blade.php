@@ -86,7 +86,7 @@
     <div class="col-xl-4 col-lg-5">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">{{ __('Distribución por roles') }}</h6>
+                <h6 class="m-0 font-weight-bold text-primary">{{ __('Distribución por rol') }}</h6>
             </div>
             <div class="card-body">
                 <div class="chart-pie pt-4 pb-2">
@@ -103,11 +103,60 @@
 </div>
 
 <div class="row">
+    <div class="col-xl-4 col-lg-5 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{{ __('Fuentes de participación') }}</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <canvas id="adminParticipationSources" height="220"></canvas>
+                </div>
+                <div class="mt-4 text-center small">
+                    <span class="mr-2"><i class="fas fa-circle text-primary"></i> {{ __('Invitaciones directas') }}</span>
+                    <span class="mr-2"><i class="fas fa-circle text-success"></i> {{ __('Docentes compartieron') }}</span>
+                    <span class="mr-2"><i class="fas fa-circle text-info"></i> {{ __('Accesos externos') }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-8 col-lg-7 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{{ __('Progreso de iniciativas') }}</h6>
+            </div>
+            <div class="card-body">
+                <h4 class="small font-weight-bold">{{ __('Migración de cursos') }} <span class="float-right">40%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                <h4 class="small font-weight-bold">{{ __('Lanzamiento de encuestas piloto') }} <span class="float-right">60%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                <h4 class="small font-weight-bold">{{ __('Integración de IA en reportes') }} <span class="float-right">75%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                <h4 class="small font-weight-bold">{{ __('Capacitación docente') }} <span class="float-right">Completo</span></h4>
+                <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
     <div class="col-xl-6">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">{{ __('Usuarios recientes') }}</h6>
-                <span class="badge badge-light text-muted">{{ __('Últimos 5 registros') }}</span>
+                <span class="badge badge-light text-muted text-uppercase">{{ __('Últimos 5 registros') }}</span>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">

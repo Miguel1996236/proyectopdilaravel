@@ -45,7 +45,7 @@
 
             @if ($role === \App\Models\User::ROLE_ADMIN)
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                         <i class="fas fa-fw fa-users"></i>
                         <span>Usuarios</span></a>
                 </li>
