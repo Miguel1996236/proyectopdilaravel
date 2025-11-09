@@ -160,4 +160,48 @@
     })();
 </script>
 @endif
+@if ($role === \App\Models\User::ROLE_TEACHER)
+<script>
+    (function () {
+        const demoCtx = document.getElementById('teacherDemoChart');
+        if (demoCtx) {
+            new Chart(demoCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                    datasets: [{
+                        label: '{{ __('Respuestas demo') }}',
+                        backgroundColor: '#36b9cc',
+                        hoverBackgroundColor: '#2c9faf',
+                        borderColor: '#4e73df',
+                        data: [2, 4, 6, 3, 5, 7, 8],
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        xAxes: [{
+                            gridLines: { display: false, drawBorder: false },
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                precision: 0,
+                            },
+                            gridLines: {
+                                color: 'rgb(234, 236, 244)',
+                                zeroLineColor: 'rgb(234, 236, 244)',
+                                drawBorder: false,
+                                borderDash: [2],
+                                zeroLineBorderDash: [2],
+                            },
+                        }],
+                    },
+                    legend: { display: false },
+                },
+            });
+        }
+    })();
+</script>
+@endif
 @endpush

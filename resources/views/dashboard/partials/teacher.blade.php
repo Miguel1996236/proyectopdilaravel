@@ -58,10 +58,11 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">{{ __('Actividad semanal de mis encuestas') }}</h6>
+                <span class="badge badge-light text-muted text-uppercase">{{ __('Demo') }}</span>
             </div>
             <div class="card-body">
                 <div class="chart-area">
-                    <canvas id="usageAreaChart" height="220"></canvas>
+                    <canvas id="teacherDemoChart" height="220"></canvas>
                 </div>
                 <p class="text-muted small mt-3 mb-0">
                     {{ __('Respuestas que has recibido día a día durante los últimos 7 días en todas tus encuestas.') }}
