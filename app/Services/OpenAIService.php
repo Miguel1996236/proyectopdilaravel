@@ -26,7 +26,7 @@ class OpenAIService
     {
         $config = config('services.openai', []);
 
-        $this->apiKey = (string) ($config['api_key'] ?? '');
+        $this->apiKey = trim((string) ($config['api_key'] ?? ''));
         $this->organization = $config['organization'] ?? null;
         $this->baseUrl = rtrim($config['base_url'] ?? 'https://api.openai.com/v1', '/');
         $this->defaultModel = (string) ($config['default_model'] ?? 'gpt-4o-mini');
@@ -34,6 +34,15 @@ class OpenAIService
 
         if (blank($this->apiKey)) {
             throw new RuntimeException('Missing OpenAI API key. Define OPENAI_API_KEY in your environment file.');
+        }
+
+        // Validar formato básico de la API key
+        if (! str_starts_with($this->apiKey, 'sk-')) {
+            throw new RuntimeException(
+                'OpenAI API key parece tener un formato incorrecto. ' .
+                'Las claves de OpenAI deben comenzar con "sk-". ' .
+                'Verifica que OPENAI_API_KEY en tu archivo .env sea correcta.'
+            );
         }
     }
 
@@ -48,6 +57,25 @@ class OpenAIService
         $payload = $this->buildPayload($prompt, $options, $profile);
 
         $response = $this->client()->post("{$this->baseUrl}/chat/completions", $payload);
+        
+        if ($response->failed()) {
+            $status = $response->status();
+            $body = $response->json();
+            
+            $errorMessage = data_get($body, 'error.message', $response->body());
+            
+            if ($status === 401) {
+                throw new RuntimeException(
+                    "OpenAI API key inválida o incorrecta. Verifica que OPENAI_API_KEY en tu archivo .env sea correcta. " .
+                    "Error: " . $errorMessage
+                );
+            }
+            
+            throw new RuntimeException(
+                "Error al comunicarse con OpenAI (HTTP {$status}): " . $errorMessage
+            );
+        }
+        
         $response->throw();
 
         return $response->json();

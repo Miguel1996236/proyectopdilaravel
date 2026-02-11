@@ -67,13 +67,13 @@
                         <i class="fas fa-fw fa-brain"></i>
                         <span>Análisis IA</span></a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReports"
-                        aria-expanded="true" aria-controls="collapseReports">
+                <li class="nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                    <a class="nav-link {{ request()->routeIs('reports.*') ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseReports"
+                        aria-expanded="{{ request()->routeIs('reports.*') ? 'true' : 'false' }}" aria-controls="collapseReports">
                         <i class="fas fa-fw fa-chart-area"></i>
                         <span>Reportes</span>
                     </a>
-                    <div id="collapseReports" class="collapse {{ request()->routeIs('reports.*') ? 'show' : '' }}" aria-labelledby="headingReports" data-parent="#accordionSidebar">
+                    <div id="collapseReports" class="collapse {{ request()->routeIs('reports.*') ? 'show' : '' }}" aria-labelledby="headingReports">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Reportes:</h6>
                             <a class="collapse-item {{ request()->routeIs('reports.summary') ? 'active' : '' }}" href="{{ route('reports.summary') }}">Resumen</a>

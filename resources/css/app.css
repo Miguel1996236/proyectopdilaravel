@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Fix: Tailwind's .collapse (visibility: collapse) conflicts with
+   Bootstrap 4's .collapse / .collapse.show toggle behaviour.
+   We restore Bootstrap's expected display-based toggling. ── */
+.collapse:not(.show) {
+    display: none !important;
+    visibility: visible !important;
+}
+
+.collapse.show {
+    display: block !important;
+    visibility: visible !important;
+}
+
+.collapsing {
+    visibility: visible !important;
+}
+
 body {
     font-family: 'Nunito', Arial, sans-serif;
     background-color: #f8f9fc;

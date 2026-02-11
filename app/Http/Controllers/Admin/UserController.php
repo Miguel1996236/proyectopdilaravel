@@ -14,17 +14,18 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    public function __construct()
+    /**
+     * Verificar que el usuario autenticado sea administrador
+     */
+    protected function ensureAdmin(): void
     {
-        $this->middleware(function ($request, $next) {
-            abort_unless(Auth::user()?->role === User::ROLE_ADMIN, 403);
-
-            return $next($request);
-        });
+        abort_unless(Auth::user()?->role === User::ROLE_ADMIN, 403);
     }
 
     public function index(): View
     {
+        $this->ensureAdmin();
+
         $users = User::query()
             ->orderBy('created_at', 'desc')
             ->paginate(10)
@@ -35,6 +36,8 @@ class UserController extends Controller
 
     public function create(): View
     {
+        $this->ensureAdmin();
+
         $roles = $this->availableRoles();
 
         return view('admin.users.create', compact('roles'));
@@ -42,6 +45,8 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request): RedirectResponse
     {
+        $this->ensureAdmin();
+
         $data = $request->validated();
 
         $password = $data['password'] ?? Str::random(10);
@@ -60,6 +65,8 @@ class UserController extends Controller
 
     public function edit(User $user): View
     {
+        $this->ensureAdmin();
+
         $roles = $this->availableRoles();
 
         return view('admin.users.edit', compact('user', 'roles'));
@@ -67,6 +74,8 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
+        $this->ensureAdmin();
+
         $data = $request->validated();
 
         $payload = [
@@ -88,6 +97,8 @@ class UserController extends Controller
 
     public function destroy(User $user): RedirectResponse
     {
+        $this->ensureAdmin();
+
         abort_if(Auth::id() === $user->id, 403, __('No puedes eliminar tu propia cuenta.'));
 
         $user->delete();
