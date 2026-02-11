@@ -41,3 +41,194 @@ body {
 .apexcharts-canvas {
     margin: 0 auto;
 }
+
+/* ── Login: Imagen de fondo personalizada con overlay oscuro ── */
+.bg-gradient-primary {
+    background-image: url('/img/login-background.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
+    min-height: 100vh;
+    padding: 0;
+}
+
+.bg-gradient-primary::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(78, 115, 223, 0.75) 0%, rgba(28, 200, 138, 0.65) 100%);
+    z-index: 0;
+}
+
+.bg-gradient-primary::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.bg-gradient-primary .container-fluid {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+}
+
+/* ── Login: Imagen lateral izquierda ── */
+.bg-login-image {
+    background-image: url('/img/login-side.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+}
+
+.bg-login-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    z-index: 0;
+}
+
+/* ── Login: Mejoras visuales del formulario ── */
+.card.o-hidden {
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.3) !important;
+    border: none !important;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+}
+
+.card.o-hidden .card-body {
+    background: transparent;
+}
+
+.form-control-user {
+    border-radius: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    border: 2px solid #e3e6f0;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    background: #fff;
+}
+
+.form-control-user:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+    background: #fff;
+}
+
+.form-control-user::placeholder {
+    color: #b7b9cc;
+    font-weight: 400;
+}
+
+.btn-user {
+    border-radius: 0.75rem;
+    padding: 0.875rem;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(78, 115, 223, 0.25);
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    border: none;
+}
+
+.btn-user:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(78, 115, 223, 0.4);
+    background: linear-gradient(135deg, #5a7fdf 0%, #2d52c8 100%);
+}
+
+.btn-user:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(78, 115, 223, 0.3);
+}
+
+/* ── Botón de mostrar/ocultar contraseña ── */
+#togglePassword {
+    z-index: 10;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+#togglePassword:hover {
+    color: #4e73df !important;
+}
+
+#togglePassword:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+#togglePassword i {
+    font-size: 1rem;
+}
+
+/* Ajustar padding del input de contraseña para el botón */
+.form-group.position-relative #password {
+    padding-right: 2.5rem;
+}
+
+/* ── Login: Mejoras adicionales ── */
+.card.o-hidden .card-body {
+    padding: 2.5rem !important;
+}
+
+@media (max-width: 991.98px) {
+    .bg-login-image {
+        min-height: 50vh;
+    }
+    
+    .bg-gradient-primary > .container {
+        padding: 1rem;
+    }
+    
+    .card.o-hidden .card-body {
+        padding: 1.5rem !important;
+    }
+}
+
+/* Mejorar el título y subtítulo */
+.card.o-hidden h1 {
+    color: #2c3e50;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.card.o-hidden .text-muted {
+    color: #6c757d !important;
+    font-size: 0.95rem;
+}
+
+/* Mejorar los enlaces */
+.card.o-hidden a.small {
+    color: #4e73df;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.card.o-hidden a.small:hover {
+    color: #224abe;
+    text-decoration: underline;
+}

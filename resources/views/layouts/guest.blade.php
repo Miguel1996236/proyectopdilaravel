@@ -14,17 +14,7 @@
     @stack('styles')
 </head>
 <body class="bg-gradient-primary">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-xl-7 col-lg-8 col-md-10 mt-5">
-                <div class="card o-hidden border-0 shadow-lg my-5">
-                    <div class="card-body p-0">
-                        {{ $slot }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {{ $slot }}
 
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
