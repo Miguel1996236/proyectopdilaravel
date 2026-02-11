@@ -33,12 +33,12 @@
             'charts' => $charts ?? [],
         ])
     @endif
-</x-app-layout>
 
-@push('scripts')
-    @if (! empty($charts))
-        @foreach ($charts as $chartInstance)
-            {!! $chartInstance->script() !!}
-        @endforeach
-    @endif
-@endpush
+    @push('scripts')
+        @if (! empty($charts))
+            @foreach ($charts as $chartInstance)
+                {!! $chartInstance->script() !!}
+            @endforeach
+        @endif
+    @endpush
+</x-app-layout>

@@ -253,6 +253,9 @@
             });
         })(jQuery);
     </script>
+    <!-- Chart.js para gráficos en vistas específicas -->
+    <script src="{{ asset('vendor/chart.js/Chart.min.js') }}"></script>
+    <!-- Larapex Charts (ApexCharts) para gráficos del dashboard y análisis -->
     <script src="{{ \ArielMejiaDev\LarapexCharts\LarapexChart::cdn() }}"></script>
     @stack('scripts')
 </body>

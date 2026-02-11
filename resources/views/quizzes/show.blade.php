@@ -256,118 +256,118 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const questionTypeData = @json($questionTypeChart);
+            const typeChartCtx = document.getElementById('questionTypeChart');
+            if (typeChartCtx && questionTypeData.labels.length) {
+                new Chart(typeChartCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: questionTypeData.labels,
+                        datasets: [{
+                            data: questionTypeData.data,
+                            backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
+                            hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617'],
+                            borderColor: '#fff',
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        legend: { position: 'bottom' },
+                    },
+                });
+            }
+
+            const invitationUsageData = @json($invitationUsageChart);
+            const usageChartCtx = document.getElementById('invitationUsageChart');
+            if (usageChartCtx && invitationUsageData.labels.length) {
+                new Chart(usageChartCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: invitationUsageData.labels,
+                        datasets: [{
+                            label: '{{ __('Respuestas') }}',
+                            data: invitationUsageData.data,
+                            backgroundColor: '#4e73df',
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    precision: 0,
+                                },
+                                gridLines: {
+                                    color: 'rgb(234, 236, 244)',
+                                    zeroLineColor: 'rgb(234, 236, 244)',
+                                    drawBorder: false,
+                                    borderDash: [2],
+                                    zeroLineBorderDash: [2]
+                                }
+                            }],
+                            xAxes: [{
+                                gridLines: { display: false },
+                            }]
+                        },
+                        legend: { display: false },
+                    },
+                });
+            }
+
+            const attemptTrendData = @json($attemptTrendChart);
+            const attemptTrendCtx = document.getElementById('attemptTrendChart');
+            if (attemptTrendCtx && attemptTrendData.labels.length) {
+                new Chart(attemptTrendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: attemptTrendData.labels,
+                        datasets: [{
+                            label: '{{ __('Intentos completados') }}',
+                            lineTension: 0.3,
+                            backgroundColor: 'rgba(28, 200, 138, 0.05)',
+                            borderColor: 'rgba(28, 200, 138, 1)',
+                            pointRadius: 3,
+                            pointBackgroundColor: 'rgba(28, 200, 138, 1)',
+                            pointBorderColor: 'rgba(28, 200, 138, 1)',
+                            pointHoverRadius: 3,
+                            pointHoverBackgroundColor: 'rgba(28, 200, 138, 1)',
+                            pointHoverBorderColor: 'rgba(28, 200, 138, 1)',
+                            pointHitRadius: 10,
+                            pointBorderWidth: 2,
+                            data: attemptTrendData.values,
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        scales: {
+                            xAxes: [{
+                                gridLines: { display: false, drawBorder: false },
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    precision: 0,
+                                },
+                                gridLines: {
+                                    color: 'rgb(234, 236, 244)',
+                                    zeroLineColor: 'rgb(234, 236, 244)',
+                                    drawBorder: false,
+                                    borderDash: [2],
+                                    zeroLineBorderDash: [2],
+                                },
+                            }],
+                        },
+                        legend: { display: false },
+                    },
+                });
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const questionTypeData = @json($questionTypeChart);
-        const typeChartCtx = document.getElementById('questionTypeChart');
-        if (typeChartCtx && questionTypeData.labels.length) {
-            new Chart(typeChartCtx, {
-                type: 'pie',
-                data: {
-                    labels: questionTypeData.labels,
-                    datasets: [{
-                        data: questionTypeData.data,
-                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
-                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617'],
-                        borderColor: '#fff',
-                    }],
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    legend: { position: 'bottom' },
-                },
-            });
-        }
-
-        const invitationUsageData = @json($invitationUsageChart);
-        const usageChartCtx = document.getElementById('invitationUsageChart');
-        if (usageChartCtx && invitationUsageData.labels.length) {
-            new Chart(usageChartCtx, {
-                type: 'bar',
-                data: {
-                    labels: invitationUsageData.labels,
-                    datasets: [{
-                        label: '{{ __('Respuestas') }}',
-                        data: invitationUsageData.data,
-                        backgroundColor: '#4e73df',
-                    }],
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true,
-                                precision: 0,
-                            },
-                            gridLines: {
-                                color: 'rgb(234, 236, 244)',
-                                zeroLineColor: 'rgb(234, 236, 244)',
-                                drawBorder: false,
-                                borderDash: [2],
-                                zeroLineBorderDash: [2]
-                            }
-                        }],
-                        xAxes: [{
-                            gridLines: { display: false },
-                        }]
-                    },
-                    legend: { display: false },
-                },
-            });
-        }
-
-        const attemptTrendData = @json($attemptTrendChart);
-        const attemptTrendCtx = document.getElementById('attemptTrendChart');
-        if (attemptTrendCtx && attemptTrendData.labels.length) {
-            new Chart(attemptTrendCtx, {
-                type: 'line',
-                data: {
-                    labels: attemptTrendData.labels,
-                    datasets: [{
-                        label: '{{ __('Intentos completados') }}',
-                        lineTension: 0.3,
-                        backgroundColor: 'rgba(28, 200, 138, 0.05)',
-                        borderColor: 'rgba(28, 200, 138, 1)',
-                        pointRadius: 3,
-                        pointBackgroundColor: 'rgba(28, 200, 138, 1)',
-                        pointBorderColor: 'rgba(28, 200, 138, 1)',
-                        pointHoverRadius: 3,
-                        pointHoverBackgroundColor: 'rgba(28, 200, 138, 1)',
-                        pointHoverBorderColor: 'rgba(28, 200, 138, 1)',
-                        pointHitRadius: 10,
-                        pointBorderWidth: 2,
-                        data: attemptTrendData.values,
-                    }],
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    scales: {
-                        xAxes: [{
-                            gridLines: { display: false, drawBorder: false },
-                        }],
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true,
-                                precision: 0,
-                            },
-                            gridLines: {
-                                color: 'rgb(234, 236, 244)',
-                                zeroLineColor: 'rgb(234, 236, 244)',
-                                drawBorder: false,
-                                borderDash: [2],
-                                zeroLineBorderDash: [2],
-                            },
-                        }],
-                    },
-                    legend: { display: false },
-                },
-            });
-        }
-    });
-</script>
-@endpush
 

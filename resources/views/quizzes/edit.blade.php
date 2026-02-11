@@ -251,30 +251,30 @@
             </div>
         </div>
     </div>
-</x-app-layout>
 
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.copy-code-btn').forEach(function (button) {
-            button.addEventListener('click', function () {
-                const code = this.dataset.code;
-                if (!code) {
-                    return;
-                }
-                navigator.clipboard.writeText(code).then(() => {
-                    this.classList.remove('btn-outline-secondary');
-                    this.classList.add('btn-success');
-                    this.innerHTML = '<i class="fas fa-check"></i>';
-                    setTimeout(() => {
-                        this.classList.add('btn-outline-secondary');
-                        this.classList.remove('btn-success');
-                        this.innerHTML = '<i class="fas fa-copy"></i>';
-                    }, 1500);
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.copy-code-btn').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const code = this.dataset.code;
+                    if (!code) {
+                        return;
+                    }
+                    navigator.clipboard.writeText(code).then(() => {
+                        this.classList.remove('btn-outline-secondary');
+                        this.classList.add('btn-success');
+                        this.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                            this.classList.add('btn-outline-secondary');
+                            this.classList.remove('btn-success');
+                            this.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 1500);
+                    });
                 });
             });
         });
-    });
-</script>
-@endpush
+    </script>
+    @endpush
+</x-app-layout>
 

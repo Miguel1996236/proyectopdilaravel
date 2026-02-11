@@ -148,12 +148,12 @@
             <i class="fas fa-info-circle mr-2"></i>{{ __('Todavía no se ha generado un informe de IA para esta encuesta. Cierra la encuesta o solicita el análisis desde la pantalla principal.') }}
         </div>
     @endif
-</x-app-layout>
 
-@push('scripts')
-    @if (! empty($analysisCharts))
-        @foreach ($analysisCharts as $chartEntry)
-            {!! $chartEntry['chart']->script() !!}
-        @endforeach
-    @endif
-@endpush
+    @push('scripts')
+        @if (! empty($analysisCharts))
+            @foreach ($analysisCharts as $chartEntry)
+                {!! $chartEntry['chart']->script() !!}
+            @endforeach
+        @endif
+    @endpush
+</x-app-layout>

@@ -15,18 +15,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(AdminUserSeeder::class);
+        // 1. Crear usuarios (administrador, docentes y estudiantes)
+        $this->call(UserSeeder::class);
 
-        User::factory()->create([
-            'name' => 'Docente Demo',
-            'email' => 'docente@example.com',
-            'role' => User::ROLE_TEACHER,
-        ]);
+        // 2. Crear cuestionarios con preguntas y opciones
+        $this->call(QuizSeeder::class);
 
-        User::factory()->create([
-            'name' => 'Estudiante Demo',
-            'email' => 'estudiante@example.com',
-            'role' => User::ROLE_STUDENT,
-        ]);
+        // 3. Crear invitaciones para los cuestionarios publicados/cerrados
+        $this->call(QuizInvitationSeeder::class);
+
+        // 4. Crear intentos y respuestas de cuestionarios
+        $this->call(QuizAttemptSeeder::class);
     }
 }
