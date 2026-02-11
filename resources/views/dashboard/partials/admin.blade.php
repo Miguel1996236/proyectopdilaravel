@@ -93,17 +93,12 @@
                 <h6 class="m-0 font-weight-bold text-primary">{{ __('Distribución por rol') }}</h6>
             </div>
             <div class="card-body">
-                <div class="chart-pie pt-4 pb-2">
+                <div class="chart-pie">
                     @if (! empty($charts['roles']))
                         {!! $charts['roles']->container() !!}
                     @else
                         <p class="text-muted small mb-0">{{ __('Sin datos para mostrar la distribución de roles.') }}</p>
                     @endif
-                </div>
-                <div class="mt-4 text-center small">
-                    <span class="mr-2"><i class="fas fa-circle text-primary"></i> {{ __('Administradores') }}</span>
-                    <span class="mr-2"><i class="fas fa-circle text-success"></i> {{ __('Docentes') }}</span>
-                    <span class="mr-2"><i class="fas fa-circle text-info"></i> {{ __('Estudiantes') }}</span>
                 </div>
             </div>
         </div>
@@ -117,17 +112,12 @@
                 <h6 class="m-0 font-weight-bold text-primary">{{ __('Fuentes de participación') }}</h6>
             </div>
             <div class="card-body">
-                <div class="chart-pie pt-4 pb-2">
+                <div class="chart-pie">
                     @if (! empty($charts['participation']))
                         {!! $charts['participation']->container() !!}
                     @else
                         <p class="text-muted small mb-0">{{ __('Sin datos disponibles para las fuentes de participación.') }}</p>
                     @endif
-                </div>
-                <div class="mt-4 text-center small">
-                    <span class="mr-2"><i class="fas fa-circle text-primary"></i> {{ __('Invitaciones directas') }}</span>
-                    <span class="mr-2"><i class="fas fa-circle text-success"></i> {{ __('Docentes compartieron') }}</span>
-                    <span class="mr-2"><i class="fas fa-circle text-info"></i> {{ __('Accesos externos') }}</span>
                 </div>
             </div>
         </div>

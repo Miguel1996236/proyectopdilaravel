@@ -80,18 +80,13 @@
                 <h6 class="m-0 font-weight-bold text-primary">{{ __('Estado de tus encuestas') }}</h6>
             </div>
             <div class="card-body">
-                <div class="chart-pie pt-2 pb-3">
+                <div class="chart-pie">
                     @if (! empty($charts['status']))
                         {!! $charts['status']->container() !!}
                     @else
                         <p class="text-muted small mb-0">{{ __('No hay suficientes datos para mostrar este gráfico.') }}</p>
                     @endif
                 </div>
-                <ul class="list-unstyled text-muted small mb-0">
-                    <li class="mb-2"><i class="fas fa-circle text-success mr-2"></i>{{ __('Publicadas') }}: <strong>{{ number_format($stats['published_surveys'] ?? 0) }}</strong></li>
-                    <li class="mb-2"><i class="fas fa-circle text-secondary mr-2"></i>{{ __('Borradores') }}: <strong>{{ number_format($stats['draft_surveys'] ?? 0) }}</strong></li>
-                    <li class="mb-2"><i class="fas fa-circle text-primary mr-2"></i>{{ __('Cerradas') }}: <strong>{{ number_format($stats['closed_surveys'] ?? 0) }}</strong></li>
-                </ul>
                 <p class="text-muted small mt-3 mb-0">
                     {{ __('Sigue el estado de cada encuesta para decidir cuándo publicar, cerrar o solicitar análisis de IA.') }}
                 </p>

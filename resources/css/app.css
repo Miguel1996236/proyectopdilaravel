@@ -11,3 +11,16 @@ body {
     background-color: rgba(255, 255, 255, 0.15);
     border-radius: 0.35rem;
 }
+
+/* ── ApexCharts: evitar que SB Admin 2 recorte los gráficos ── */
+.chart-pie,
+.chart-area {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+}
+
+/* Asegurar que el contenedor de ApexCharts tenga espacio */
+.apexcharts-canvas {
+    margin: 0 auto;
+}

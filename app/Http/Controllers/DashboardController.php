@@ -255,8 +255,7 @@ class DashboardController extends Controller
         $chart = (new LarapexChart())->lineChart();
 
         $chart
-            ->setTitle($title)
-            ->setHeight(320)
+            ->setHeight(300)
             ->setColors(['#4e73df'])
             ->setMarkers(['#2e59d9'], 7, 10)
             ->setXAxis($series['labels'])
@@ -277,8 +276,7 @@ class DashboardController extends Controller
         $chart = (new LarapexChart())->donutChart();
 
         $chart
-            ->setTitle($title)
-            ->setHeight(320)
+            ->setHeight(300)
             ->setLabels($labels)
             ->addData($values)
             ->setColors(['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796']);
