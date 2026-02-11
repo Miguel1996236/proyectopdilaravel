@@ -19,9 +19,33 @@
     visibility: visible !important;
 }
 
+/* ── Fix: Tailwind preflight sobrescribe las alturas de html/body que
+   SB Admin 2 necesita para el layout con sidebar + sticky footer.
+   Las restauramos aquí. ── */
+html {
+    position: relative !important;
+    min-height: 100% !important;
+}
+
 body {
     font-family: 'Nunito', Arial, sans-serif;
     background-color: #f8f9fc;
+    height: 100% !important;
+}
+
+#wrapper {
+    display: flex !important;
+    min-height: 100vh;
+}
+
+#wrapper #content-wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100%;
+}
+
+#wrapper #content-wrapper #content {
+    flex: 1 0 auto !important;
 }
 
 .sidebar .nav-link.active {
@@ -41,6 +65,7 @@ body {
 .apexcharts-canvas {
     margin: 0 auto;
 }
+
 
 /* ── Login: Imagen de fondo personalizada con overlay oscuro ── */
 /* Solo aplicar estos estilos cuando bg-gradient-primary está en el body (páginas de login/register) */
