@@ -104,6 +104,7 @@ body.bg-gradient-primary:not([id="page-top"])::after {
     z-index: 1;
 }
 
+body.bg-gradient-primary:not([id="page-top"]) > .row,
 body.bg-gradient-primary:not([id="page-top"]) .container-fluid {
     position: relative;
     z-index: 2;

@@ -1,11 +1,6 @@
 <x-guest-layout>
-    <div class="container-fluid p-0">
-        <div class="row no-gutters min-vh-100">
-            <div class="col-lg-6 d-none d-lg-block bg-login-image">
-                <div style="position: relative; z-index: 1; height: 100%; display: flex; align-items: center; justify-content: center;">
-                    <!-- La imagen se muestra como fondo -->
-                </div>
-            </div>
+    <div class="row no-gutters min-vh-100" style="position: relative; z-index: 2;">
+        <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
             <div class="col-lg-6 d-flex align-items-center">
                 <div class="container">
                     <div class="row justify-content-center">
@@ -97,7 +92,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 
     @push('scripts')
