@@ -43,7 +43,9 @@ body {
 }
 
 /* ── Login: Imagen de fondo personalizada con overlay oscuro ── */
-.bg-gradient-primary {
+/* Solo aplicar estos estilos cuando bg-gradient-primary está en el body (páginas de login/register) */
+/* NO aplicar cuando el body tiene id="page-top" (dashboard) */
+body.bg-gradient-primary:not([id="page-top"]) {
     background-image: url('/img/login-background.png');
     background-position: center;
     background-size: cover;
@@ -54,7 +56,8 @@ body {
     padding: 0;
 }
 
-.bg-gradient-primary::before {
+/* Solo aplicar overlays cuando el body tiene bg-gradient-primary Y no tiene el id page-top (dashboard) */
+body.bg-gradient-primary:not([id="page-top"])::before {
     content: '';
     position: fixed;
     top: 0;
@@ -65,7 +68,7 @@ body {
     z-index: 0;
 }
 
-.bg-gradient-primary::after {
+body.bg-gradient-primary:not([id="page-top"])::after {
     content: '';
     position: fixed;
     top: 0;
@@ -76,10 +79,31 @@ body {
     z-index: 1;
 }
 
-.bg-gradient-primary .container-fluid {
+body.bg-gradient-primary:not([id="page-top"]) .container-fluid {
     position: relative;
     z-index: 2;
     min-height: 100vh;
+}
+
+/* Asegurar que el sidebar mantenga sus estilos originales de SB Admin 2 */
+/* El sidebar siempre debe mantener su gradiente azul, sin overlays */
+.sidebar.bg-gradient-primary {
+    background: linear-gradient(180deg, #4e73df 10%, #224abe 100%) !important;
+    background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%) !important;
+    background-attachment: scroll !important;
+    position: relative !important;
+    z-index: auto !important;
+    min-height: auto !important;
+    padding: 0 !important;
+}
+
+/* Eliminar cualquier pseudo-elemento del sidebar */
+.sidebar.bg-gradient-primary::before,
+.sidebar.bg-gradient-primary::after {
+    content: none !important;
+    display: none !important;
+    position: static !important;
+    background: none !important;
 }
 
 /* ── Login: Imagen lateral izquierda ── */
@@ -141,6 +165,17 @@ body {
     font-weight: 400;
 }
 
+/* Estilos para select en formularios de autenticación */
+.form-control-user select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236c757d' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
 .btn-user {
     border-radius: 0.75rem;
     padding: 0.875rem;
@@ -200,7 +235,7 @@ body {
         min-height: 50vh;
     }
     
-    .bg-gradient-primary > .container {
+    body.bg-gradient-primary > .container {
         padding: 1rem;
     }
     
