@@ -57,16 +57,6 @@
                         <i class="fas fa-fw fa-file-alt"></i>
                         <span>Encuestas</span></a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('quizzes.index') }}#invitations">
-                        <i class="fas fa-fw fa-key"></i>
-                        <span>Códigos de Invitación</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('quizzes.index') }}#analysis">
-                        <i class="fas fa-fw fa-brain"></i>
-                        <span>Análisis IA</span></a>
-                </li>
                 <li class="nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
                     <a class="nav-link {{ request()->routeIs('reports.*') ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseReports"
                         aria-expanded="{{ request()->routeIs('reports.*') ? 'true' : 'false' }}" aria-controls="collapseReports">
@@ -76,9 +66,10 @@
                     <div id="collapseReports" class="collapse {{ request()->routeIs('reports.*') ? 'show' : '' }}" aria-labelledby="headingReports">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Reportes:</h6>
-                            <a class="collapse-item {{ request()->routeIs('reports.summary') ? 'active' : '' }}" href="{{ route('reports.summary') }}">Resumen</a>
-                            <a class="collapse-item {{ request()->routeIs('reports.students') ? 'active' : '' }}" href="{{ route('reports.students') }}">Estudiantes</a>
-                            <a class="collapse-item {{ request()->routeIs('reports.surveys') ? 'active' : '' }}" href="{{ route('reports.surveys') }}">Encuestas</a>
+                            <a class="collapse-item {{ request()->routeIs('reports.summary') ? 'active' : '' }}" href="{{ route('reports.summary') }}">Reportes</a>
+                            @if($role === \App\Models\User::ROLE_ADMIN)
+                                <a class="collapse-item {{ request()->routeIs('reports.students') ? 'active' : '' }}" href="{{ route('reports.students') }}">Estudiantes</a>
+                            @endif
                         </div>
                     </div>
                 </li>

@@ -37,7 +37,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('summary', [ReportsController::class, 'summary'])->name('summary');
         Route::get('students', [ReportsController::class, 'students'])->name('students');
-        Route::get('surveys', [ReportsController::class, 'surveys'])->name('surveys');
+        Route::get('surveys', function () {
+            return redirect()->route('reports.summary');
+        })->name('surveys');
     });
 });
 
