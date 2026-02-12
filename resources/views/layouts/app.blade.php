@@ -26,7 +26,7 @@
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-clipboard-list"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">{{ config('app.name', 'Sistema') }}</div>
+                <div class="sidebar-brand-text mx-3">EduQuiz</div>
             </a>
 
             <hr class="sidebar-divider my-0">
@@ -120,43 +120,7 @@
                         <i class="fa fa-bars"></i>
                     </button>
 
-                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                        <div class="input-group">
-                            <input type="text" class="form-control bg-light border-0 small" placeholder="Buscar..." aria-label="Search" aria-describedby="basic-addon2" readonly>
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button" disabled>
-                                    <i class="fas fa-search fa-sm"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-bell fa-fw"></i>
-                                <span class="badge badge-danger badge-counter">3+</span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">
-                                    Alertas
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary">
-                                            <i class="fas fa-file-alt text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">Noviembre 8, 2025</div>
-                                        <span class="font-weight-bold">Nueva encuesta disponible.</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Ver todas las alertas</a>
-                            </div>
-                        </li>
-
-                        <div class="topbar-divider d-none d-sm-block"></div>
 
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -220,7 +184,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; {{ config('app.name', 'Sistema de Encuestas') }} {{ now()->year }}</span>
+                        <span>Copyright &copy; EduQuiz {{ now()->year }}</span>
                     </div>
                 </div>
             </footer>
