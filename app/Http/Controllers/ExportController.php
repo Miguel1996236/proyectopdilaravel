@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\AuthorizesQuizAccess;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\User;
@@ -12,13 +13,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportController extends Controller
 {
-    protected function ensureTeacherOrAdmin(): void
-    {
-        abort_unless(
-            in_array(Auth::user()?->role, [User::ROLE_ADMIN, User::ROLE_TEACHER]),
-            403
-        );
-    }
+    use AuthorizesQuizAccess;
 
     /**
      * Exportar reporte general de encuestas a Excel

@@ -64,5 +64,20 @@ class Quiz extends Model
     {
         return $this->hasMany(QuizAiAnalysis::class);
     }
+
+    public function calculateParticipationRate(): float
+    {
+        $totalInvitations = $this->invitations()->where('is_active', true)->count();
+        if ($totalInvitations === 0) {
+            return 0;
+        }
+
+        $usedInvitations = $this->invitations()
+            ->where('is_active', true)
+            ->whereHas('attempts', fn ($q) => $q->where('status', 'completed'))
+            ->count();
+
+        return (float) min(100, round(($usedInvitations / $totalInvitations) * 100, 1));
+    }
 }
 

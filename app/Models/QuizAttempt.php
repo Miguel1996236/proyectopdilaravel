@@ -43,9 +43,14 @@ class QuizAttempt extends Model
         return $this->belongsTo(QuizInvitation::class);
     }
 
-    public function participant(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function participant(): BelongsTo
+    {
+        return $this->user();
     }
 
     public function answers(): HasMany

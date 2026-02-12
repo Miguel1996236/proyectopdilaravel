@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\AuthorizesQuizAccess;
 use App\Http\Requests\UpdateQuizRequest;
 use App\Http\Requests\StoreQuizRequest;
 use App\Jobs\ProcessQuizAnalysisJob;
@@ -21,6 +22,16 @@ use Illuminate\Support\Str;
 
 class QuizController extends Controller
 {
+    use AuthorizesQuizAccess;
+
+    protected const QUESTION_TYPE_LABELS = [
+        'multiple_choice' => 'Opción múltiple',
+        'multi_select' => 'Selección múltiple',
+        'scale' => 'Escala',
+        'open_text' => 'Respuesta abierta',
+        'numeric' => 'Respuesta numérica',
+    ];
+
     public function index(): View
     {
         $user = Auth::user();
@@ -84,7 +95,7 @@ class QuizController extends Controller
 
     public function show(Quiz $quiz): View
     {
-        $this->ensureOwnership($quiz);
+        $this->ensureQuizOwnership($quiz);
 
         $quiz->load(['questions.options', 'invitations', 'attempts.answers', 'analyses' => fn ($query) => $query->latest()]);
 
@@ -112,7 +123,7 @@ class QuizController extends Controller
 
     public function edit(Quiz $quiz): View
     {
-        $this->ensureOwnership($quiz);
+        $this->ensureQuizOwnership($quiz);
 
         $quiz->load(['questions.options', 'invitations' => fn ($query) => $query->latest()]);
 
@@ -121,7 +132,7 @@ class QuizController extends Controller
 
     public function update(UpdateQuizRequest $request, Quiz $quiz): RedirectResponse
     {
-        $this->ensureOwnership($quiz);
+        $this->ensureQuizOwnership($quiz);
 
         $quiz->update($request->validated());
 
@@ -132,7 +143,7 @@ class QuizController extends Controller
 
     public function destroy(Quiz $quiz): RedirectResponse
     {
-        $this->ensureOwnership($quiz);
+        $this->ensureQuizOwnership($quiz);
 
         $quiz->delete();
 
@@ -143,7 +154,7 @@ class QuizController extends Controller
 
     public function publish(Quiz $quiz): RedirectResponse
     {
-        $this->ensureOwnership($quiz);
+        $this->ensureQuizOwnership($quiz);
 
         if ($quiz->status === 'closed') {
             return back()->with('status', __('La encuesta ya está cerrada.'));
@@ -163,7 +174,7 @@ class QuizController extends Controller
 
     public function close(Quiz $quiz): RedirectResponse
     {
-        $this->ensureOwnership($quiz);
+        $this->ensureQuizOwnership($quiz);
 
         if ($quiz->status === 'closed') {
             return back()->with('status', __('La encuesta ya está cerrada.'));
@@ -182,7 +193,7 @@ class QuizController extends Controller
 
     public function analyze(Quiz $quiz): RedirectResponse
     {
-        $this->ensureOwnership($quiz);
+        $this->ensureQuizOwnership($quiz);
 
         if ($quiz->status !== 'closed') {
             return back()->with('error', __('Debes cerrar la encuesta antes de generar el análisis con IA.'));
@@ -199,7 +210,7 @@ class QuizController extends Controller
 
     public function analysis(Quiz $quiz, QuizAnalyticsService $analyticsService): View
     {
-        $this->ensureOwnership($quiz);
+        $this->ensureQuizOwnership($quiz);
 
         $quiz->load(['questions.options', 'attempts.answers', 'analyses' => fn ($query) => $query->latest()]);
 
@@ -227,7 +238,7 @@ class QuizController extends Controller
 
     public function exportAnalysis(Quiz $quiz, QuizAnalyticsService $analyticsService)
     {
-        $this->ensureOwnership($quiz);
+        $this->ensureQuizOwnership($quiz);
 
         $quiz->load(['questions.options', 'attempts.answers', 'analyses' => fn ($query) => $query->latest()]);
         $analysisRecord = $quiz->analyses->first();
@@ -280,31 +291,12 @@ class QuizController extends Controller
         return $code;
     }
 
-    protected function ensureOwnership(Quiz $quiz): void
-    {
-        $user = Auth::user();
-
-        abort_if(
-            $user->role !== User::ROLE_ADMIN && $quiz->user_id !== $user->id,
-            403,
-            'No tienes permisos para acceder a esta encuesta.'
-        );
-    }
-
     protected function buildQuestionTypeChart(Quiz $quiz): array
     {
-        $typeLabels = [
-            'multiple_choice' => __('Opción múltiple'),
-            'multi_select' => __('Selección múltiple'),
-            'scale' => __('Escala'),
-            'open_text' => __('Respuesta abierta'),
-            'numeric' => __('Respuesta numérica'),
-        ];
-
         $grouped = $quiz->questions->groupBy('type');
 
-        $labels = $grouped->map(function ($questions, $type) use ($typeLabels) {
-            return $typeLabels[$type] ?? ucfirst(str_replace('_', ' ', $type));
+        $labels = $grouped->map(function ($questions, $type) {
+            return __(self::QUESTION_TYPE_LABELS[$type] ?? ucfirst(str_replace('_', ' ', $type)));
         })->values()->all();
 
         $data = $grouped->map->count()->values()->all();
@@ -354,16 +346,8 @@ class QuizController extends Controller
         return $quiz->questions
             ->groupBy('type')
             ->map(function ($questions, $type) use ($totalQuestions) {
-                $typeLabels = [
-                    'multiple_choice' => __('Opción múltiple'),
-                    'multi_select' => __('Selección múltiple'),
-                    'scale' => __('Escala'),
-                    'open_text' => __('Respuesta abierta'),
-                    'numeric' => __('Respuesta numérica'),
-                ];
-
                 return [
-                    'label' => $typeLabels[$type] ?? ucfirst(str_replace('_', ' ', $type)),
+                    'label' => __(self::QUESTION_TYPE_LABELS[$type] ?? ucfirst(str_replace('_', ' ', $type))),
                     'count' => $questions->count(),
                     'percentage' => round(($questions->count() / $totalQuestions) * 100),
                 ];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\AuthorizesQuizAccess;
 use App\Mail\SurveyReminder;
 use App\Models\EmailReminder;
 use App\Models\Quiz;
@@ -15,13 +16,7 @@ use Illuminate\Support\Facades\Mail;
 
 class ReminderController extends Controller
 {
-    protected function ensureTeacherOrAdmin(): void
-    {
-        abort_unless(
-            in_array(Auth::user()?->role, [User::ROLE_ADMIN, User::ROLE_TEACHER]),
-            403
-        );
-    }
+    use AuthorizesQuizAccess;
 
     public function create(): View
     {

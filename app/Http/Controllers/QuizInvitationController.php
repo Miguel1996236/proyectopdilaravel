@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\AuthorizesQuizAccess;
 use App\Http\Requests\InvitationRequest;
 use App\Models\Quiz;
 use App\Models\QuizInvitation;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class QuizInvitationController extends Controller
 {
+    use AuthorizesQuizAccess;
+
     public function store(InvitationRequest $request, Quiz $quiz): RedirectResponse
     {
-        $this->ensureOwnership($quiz);
+        $this->ensureQuizOwnership($quiz, __('No tienes permisos para gestionar invitaciones de esta encuesta.'));
 
         $data = $request->validated();
 
@@ -77,21 +78,10 @@ class QuizInvitationController extends Controller
         return $code;
     }
 
-    protected function ensureOwnership(Quiz $quiz): void
-    {
-        $user = Auth::user();
-
-        abort_if(
-            $user->role !== User::ROLE_ADMIN && $quiz->user_id !== $user->id,
-            403,
-            __('No tienes permisos para gestionar invitaciones de esta encuesta.')
-        );
-    }
-
     protected function ensureInvitationOwnership(Quiz $quiz, QuizInvitation $invitation): void
     {
         abort_if($invitation->quiz_id !== $quiz->id, 404);
 
-        $this->ensureOwnership($quiz);
+        $this->ensureQuizOwnership($quiz, __('No tienes permisos para gestionar invitaciones de esta encuesta.'));
     }
 }

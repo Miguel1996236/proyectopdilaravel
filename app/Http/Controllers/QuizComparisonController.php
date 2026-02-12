@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\AuthorizesQuizAccess;
 use App\Models\Quiz;
 use App\Models\User;
 use App\Services\OpenAIService;
@@ -13,13 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class QuizComparisonController extends Controller
 {
-    protected function ensureTeacherOrAdmin(): void
-    {
-        abort_unless(
-            in_array(Auth::user()?->role, [User::ROLE_ADMIN, User::ROLE_TEACHER]),
-            403
-        );
-    }
+    use AuthorizesQuizAccess;
 
     public function index(): View
     {
