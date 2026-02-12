@@ -1,6 +1,13 @@
+@php $themeColor = $quiz->theme_color ?? '#4e73df'; @endphp
+<style>
+    .survey-theme-header { border-top: 4px solid {{ $themeColor }}; }
+    .survey-theme-badge { background-color: {{ $themeColor }} !important; color: #fff !important; }
+    .survey-theme-btn { background-color: {{ $themeColor }} !important; border-color: {{ $themeColor }} !important; color: #fff !important; }
+    .survey-theme-btn:hover { filter: brightness(0.9); color: #fff !important; }
+</style>
 <div class="row">
     <div class="col-lg-12">
-        <div class="card shadow mb-4">
+        <div class="card shadow mb-4 survey-theme-header">
             <div class="card-body">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-4">
                     <div class="mb-3 mb-md-0 flex-grow-1">
@@ -10,7 +17,7 @@
                         @endif
                     </div>
                     <div class="w-100 w-md-auto mt-2 mt-md-0">
-                        <span class="badge badge-pill badge-primary text-uppercase d-inline-block">
+                        <span class="badge badge-pill survey-theme-badge text-uppercase d-inline-block">
                             {{ __('Código:') }} <strong>{{ $invitation->code }}</strong>
                         </span>
                     </div>
@@ -132,7 +139,7 @@
                         </div>
                     @endforeach
 
-                    <button type="submit" class="btn btn-primary btn-user btn-block">
+                    <button type="submit" class="btn survey-theme-btn btn-user btn-block">
                         {{ __('Enviar respuestas') }}
                     </button>
                 </form>

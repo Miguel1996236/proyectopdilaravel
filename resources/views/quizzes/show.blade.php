@@ -15,9 +15,14 @@
                             'closed' => __('Cerrada'),
                         ];
                     @endphp
-                    <span class="badge badge-pill badge-light text-secondary text-uppercase">
-                        {{ $statusLabels[$quiz->status] ?? ucfirst($quiz->status) }}
-                    </span>
+                    <div>
+                        <span class="badge badge-pill badge-light text-secondary text-uppercase mr-2">
+                            {{ $statusLabels[$quiz->status] ?? ucfirst($quiz->status) }}
+                        </span>
+                        <a href="{{ route('exports.quiz.responses', $quiz) }}" class="btn btn-success btn-sm" title="{{ __('Exportar respuestas') }}">
+                            <i class="fas fa-file-excel mr-1"></i>{{ __('Excel') }}
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body">
                     @if ($quiz->description)

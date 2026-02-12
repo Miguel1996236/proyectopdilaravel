@@ -3,6 +3,12 @@
         {{ __('Reportes') }}
     </x-slot>
 
+    <div class="d-sm-flex align-items-center justify-content-end mb-3">
+        <a href="{{ route('exports.surveys') }}" class="btn btn-success btn-sm">
+            <i class="fas fa-file-excel mr-1"></i>{{ __('Exportar a Excel') }}
+        </a>
+    </div>
+
     <!-- Tarjetas de métricas -->
     <div class="row">
         <div class="col-xl-{{ auth()->user()->role === \App\Models\User::ROLE_ADMIN ? '3' : '4' }} col-md-6 mb-4">

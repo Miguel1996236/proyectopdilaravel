@@ -25,6 +25,8 @@ class UpdateQuizRequest extends FormRequest
             'max_attempts' => ['nullable', 'integer', 'min:1'],
             'require_login' => ['nullable', 'boolean'],
             'target_audience' => ['nullable', Rule::in(['all', 'students', 'teachers'])],
+            'randomize_questions' => ['nullable', 'boolean'],
+            'theme_color' => ['nullable', 'string', 'max:7', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'settings' => ['nullable', 'array'],
         ];
     }
@@ -45,6 +47,7 @@ class UpdateQuizRequest extends FormRequest
     {
         $this->merge([
             'require_login' => $this->boolean('require_login'),
+            'randomize_questions' => $this->boolean('randomize_questions'),
             'max_attempts' => $this->input('max_attempts') ?: 1,
         ]);
     }

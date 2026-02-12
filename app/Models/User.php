@@ -65,4 +65,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(QuizInvitation::class, 'created_by');
     }
+
+    public function studentGroups()
+    {
+        return $this->hasMany(StudentGroup::class);
+    }
 }

@@ -57,6 +57,21 @@
                         <i class="fas fa-fw fa-file-alt"></i>
                         <span>Encuestas</span></a>
                 </li>
+                <li class="nav-item {{ request()->routeIs('groups.*') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('groups.index') }}">
+                        <i class="fas fa-fw fa-users-cog"></i>
+                        <span>Grupos</span></a>
+                </li>
+                <li class="nav-item {{ request()->routeIs('comparisons.*') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('comparisons.index') }}">
+                        <i class="fas fa-fw fa-exchange-alt"></i>
+                        <span>Comparar</span></a>
+                </li>
+                <li class="nav-item {{ request()->routeIs('reminders.*') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('reminders.create') }}">
+                        <i class="fas fa-fw fa-envelope"></i>
+                        <span>Recordatorios</span></a>
+                </li>
                 <li class="nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
                     <a class="nav-link {{ request()->routeIs('reports.*') ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseReports"
                         aria-expanded="{{ request()->routeIs('reports.*') ? 'true' : 'false' }}" aria-controls="collapseReports">
@@ -68,7 +83,7 @@
                             <h6 class="collapse-header">Reportes:</h6>
                             <a class="collapse-item {{ request()->routeIs('reports.summary') ? 'active' : '' }}" href="{{ route('reports.summary') }}">Reportes</a>
                             @if($role === \App\Models\User::ROLE_ADMIN)
-                                <a class="collapse-item {{ request()->routeIs('reports.students') ? 'active' : '' }}" href="{{ route('reports.students') }}">Estudiantes</a>
+                            <a class="collapse-item {{ request()->routeIs('reports.students') ? 'active' : '' }}" href="{{ route('reports.students') }}">Estudiantes</a>
                             @endif
                         </div>
                     </div>

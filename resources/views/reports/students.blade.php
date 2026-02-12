@@ -3,6 +3,12 @@
         {{ __('Reporte de estudiantes') }}
     </x-slot>
 
+    <div class="d-sm-flex align-items-center justify-content-end mb-3">
+        <a href="{{ route('exports.students') }}" class="btn btn-success btn-sm">
+            <i class="fas fa-file-excel mr-1"></i>{{ __('Exportar a Excel') }}
+        </a>
+    </div>
+
     <!-- Filtros -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">

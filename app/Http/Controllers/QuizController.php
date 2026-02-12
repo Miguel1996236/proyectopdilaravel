@@ -45,6 +45,8 @@ class QuizController extends Controller
             'max_attempts' => 1,
             'require_login' => true,
             'target_audience' => 'all',
+            'randomize_questions' => false,
+            'theme_color' => '#4e73df',
         ]);
 
         return view('quizzes.create', compact('quiz'));
@@ -65,6 +67,8 @@ class QuizController extends Controller
                 'max_attempts' => $request->input('max_attempts', 1),
                 'require_login' => $request->boolean('require_login'),
                 'target_audience' => $request->input('target_audience', 'all'),
+                'randomize_questions' => $request->boolean('randomize_questions'),
+                'theme_color' => $request->input('theme_color', '#4e73df'),
                 'settings' => $request->input('settings'),
             ]);
 

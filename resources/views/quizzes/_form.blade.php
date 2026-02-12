@@ -61,16 +61,6 @@
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
-    <div class="form-group col-md-4 d-flex align-items-center">
-        <div class="custom-control custom-switch mt-4">
-            <input type="checkbox" class="custom-control-input" id="require_login" name="require_login"
-                   value="1" @checked(old('require_login', $quiz->require_login ?? true))>
-            <label class="custom-control-label" for="require_login">{{ __('Requiere autenticación') }}</label>
-        </div>
-        @error('require_login')
-            <div class="invalid-feedback d-block">{{ $message }}</div>
-        @enderror
-    </div>
     <div class="form-group col-md-4">
         <label for="target_audience" class="font-weight-bold">{{ __('Dirigida a') }}</label>
         <select name="target_audience" id="target_audience" class="form-control @error('target_audience') is-invalid @enderror">
@@ -83,6 +73,41 @@
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
+    <div class="form-group col-md-4 d-flex align-items-center">
+        <div class="custom-control custom-switch mt-4">
+            <input type="checkbox" class="custom-control-input" id="require_login" name="require_login"
+                   value="1" @checked(old('require_login', $quiz->require_login ?? true))>
+            <label class="custom-control-label" for="require_login">{{ __('Requiere autenticación') }}</label>
+        </div>
+        @error('require_login')
+            <div class="invalid-feedback d-block">{{ $message }}</div>
+        @enderror
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group col-md-4 d-flex align-items-center">
+        <div class="custom-control custom-switch mt-2">
+            <input type="checkbox" class="custom-control-input" id="randomize_questions" name="randomize_questions"
+                   value="1" @checked(old('randomize_questions', $quiz->randomize_questions ?? false))>
+            <label class="custom-control-label" for="randomize_questions">{{ __('Aleatorizar preguntas') }}</label>
+        </div>
+        <small class="form-text text-muted ml-2 mt-2">{{ __('Las preguntas aparecerán en orden aleatorio') }}</small>
+        @error('randomize_questions')
+            <div class="invalid-feedback d-block">{{ $message }}</div>
+        @enderror
+    </div>
+    <div class="form-group col-md-4">
+        <label for="theme_color" class="font-weight-bold">{{ __('Color del tema') }}</label>
+        <div class="d-flex align-items-center">
+            <input type="color" name="theme_color" id="theme_color"
+                   value="{{ old('theme_color', $quiz->theme_color ?? '#4e73df') }}"
+                   class="form-control form-control-color" style="width: 50px; height: 38px; padding: 2px; cursor: pointer;">
+            <input type="text" id="theme_color_text" value="{{ old('theme_color', $quiz->theme_color ?? '#4e73df') }}"
+                   class="form-control ml-2" style="max-width: 100px;" readonly>
+        </div>
+        <small class="form-text text-muted">{{ __('Color principal visible al responder la encuesta') }}</small>
+    </div>
 </div>
 
 <div class="form-group">
@@ -91,4 +116,18 @@
               class="form-control">{{ old('settings.additional_instructions', data_get($quiz->settings, 'additional_instructions')) }}</textarea>
     <small class="form-text text-muted">{{ __('Mensaje visible para los participantes antes de responder la encuesta.') }}</small>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const colorInput = document.getElementById('theme_color');
+        const colorText = document.getElementById('theme_color_text');
+        if (colorInput && colorText) {
+            colorInput.addEventListener('input', function() {
+                colorText.value = this.value;
+            });
+        }
+    });
+</script>
+@endpush
 

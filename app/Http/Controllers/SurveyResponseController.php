@@ -59,6 +59,11 @@ class SurveyResponseController extends Controller
         $quiz = $invitation->quiz;
         $questions = $quiz->questions;
 
+        // Aleatorizar preguntas si está habilitado
+        if ($quiz->randomize_questions) {
+            $questions = $questions->shuffle();
+        }
+
         return view('surveys.respond', [
             'quiz' => $quiz,
             'invitation' => $invitation,

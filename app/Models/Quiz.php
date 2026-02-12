@@ -23,6 +23,8 @@ class Quiz extends Model
         'max_attempts',
         'require_login',
         'target_audience',
+        'randomize_questions',
+        'theme_color',
         'settings',
         'analysis_requested_at',
         'analysis_completed_at',
@@ -35,6 +37,7 @@ class Quiz extends Model
         'analysis_completed_at' => 'datetime',
         'settings' => 'array',
         'require_login' => 'boolean',
+        'randomize_questions' => 'boolean',
     ];
 
     public function owner(): BelongsTo

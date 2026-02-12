@@ -26,5 +26,11 @@ class DatabaseSeeder extends Seeder
 
         // 4. Crear intentos y respuestas de cuestionarios
         $this->call(QuizAttemptSeeder::class);
+
+        // 5. Crear grupos de estudiantes
+        $this->call(StudentGroupSeeder::class);
+
+        // 6. Crear encuestas comparativas (2025 vs 2026)
+        $this->call(ComparisonQuizSeeder::class);
     }
 }
