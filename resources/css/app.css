@@ -293,3 +293,20 @@ body.bg-gradient-primary:not([id="page-top"]) .container-fluid {
     color: #224abe;
     text-decoration: underline;
 }
+
+/* ── Mejoras para campos de fecha y hora separados ── */
+#expires_at_date,
+#expires_at_time {
+    font-size: 0.875rem;
+}
+
+#expires_at_date:focus,
+#expires_at_time:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+/* Asegurar que los campos de fecha y hora se vean bien juntos */
+.form-group .row.no-gutters .col-6 input {
+    width: 100%;
+}

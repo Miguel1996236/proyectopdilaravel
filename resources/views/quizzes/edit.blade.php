@@ -157,9 +157,18 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label class="font-weight-bold">{{ __('Expira el') }}</label>
-                                <input type="datetime-local" name="expires_at" class="form-control form-control-sm @error('expires_at') is-invalid @enderror" value="{{ old('expires_at') }}">
+                                <div class="row no-gutters">
+                                    <div class="col-6 pr-1">
+                                        <input type="date" id="expires_at_date" class="form-control form-control-sm @error('expires_at') is-invalid @enderror" placeholder="{{ __('Fecha') }}" value="{{ old('expires_at') ? \Carbon\Carbon::parse(old('expires_at'))->format('Y-m-d') : '' }}">
+                                    </div>
+                                    <div class="col-6 pl-1">
+                                        <input type="time" id="expires_at_time" class="form-control form-control-sm @error('expires_at') is-invalid @enderror" placeholder="{{ __('Hora') }}" value="{{ old('expires_at') ? \Carbon\Carbon::parse(old('expires_at'))->format('H:i') : '' }}">
+                                    </div>
+                                </div>
+                                <input type="hidden" name="expires_at" id="expires_at" value="{{ old('expires_at') }}">
+                                <small class="form-text text-muted">{{ __('Opcional: Deja vacío para que no expire') }}</small>
                                 @error('expires_at')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
@@ -254,7 +263,49 @@
 
     @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Función para combinar fecha y hora en el campo hidden
+            function updateExpiresAt() {
+                const dateInput = document.getElementById('expires_at_date');
+                const timeInput = document.getElementById('expires_at_time');
+                const hiddenInput = document.getElementById('expires_at');
+                
+                if (dateInput && timeInput && hiddenInput) {
+                    const date = dateInput.value;
+                    const time = timeInput.value || '00:00';
+                    
+                    if (date) {
+                        hiddenInput.value = date + 'T' + time;
+                    } else {
+                        hiddenInput.value = '';
+                    }
+                }
+            }
+            
+            // Actualizar cuando cambien los campos
+            const dateInput = document.getElementById('expires_at_date');
+            const timeInput = document.getElementById('expires_at_time');
+            
+            if (dateInput) {
+                dateInput.addEventListener('change', updateExpiresAt);
+            }
+            
+            if (timeInput) {
+                timeInput.addEventListener('change', updateExpiresAt);
+            }
+            
+            // Actualizar antes de enviar el formulario
+            const form = document.querySelector('form[action*="invitations.store"]');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    updateExpiresAt();
+                });
+            }
+            
+            // Inicializar el valor si hay datos antiguos
+            updateExpiresAt();
+            
+            // Funcionalidad de copiar código
             document.querySelectorAll('.copy-code-btn').forEach(function (button) {
                 button.addEventListener('click', function () {
                     const code = this.dataset.code;
