@@ -22,6 +22,7 @@ class Quiz extends Model
         'closes_at',
         'max_attempts',
         'require_login',
+        'target_audience',
         'settings',
         'analysis_requested_at',
         'analysis_completed_at',

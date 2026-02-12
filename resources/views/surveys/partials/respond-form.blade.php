@@ -2,16 +2,18 @@
     <div class="col-lg-12">
         <div class="card shadow mb-4">
             <div class="card-body">
-                <div class="d-flex flex-wrap justify-content-between align-items-start mb-4">
-                    <div class="mb-3 mb-lg-0">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-4">
+                    <div class="mb-3 mb-md-0 flex-grow-1">
                         <h1 class="h4 text-gray-900 mb-1">{{ $quiz->title }}</h1>
                         @if ($quiz->description)
                             <p class="text-muted small mb-0">{{ $quiz->description }}</p>
                         @endif
                     </div>
-                    <span class="badge badge-pill badge-primary text-uppercase">
-                        {{ __('Código:') }} {{ $invitation->code }}
-                    </span>
+                    <div class="w-100 w-md-auto mt-2 mt-md-0">
+                        <span class="badge badge-pill badge-primary text-uppercase d-inline-block">
+                            {{ __('Código:') }} <strong>{{ $invitation->code }}</strong>
+                        </span>
+                    </div>
                 </div>
 
                 @if ($errors->has('general'))

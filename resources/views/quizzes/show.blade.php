@@ -66,19 +66,37 @@
                     @if ($quiz->invitations->count())
                         <ul class="list-group">
                             @foreach ($quiz->invitations as $invitation)
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>{{ $invitation->code }}</strong>
-                                        <div class="small text-muted">
-                                            {{ __('Usos') }}: {{ $invitation->uses_count }}{{ $invitation->max_uses ? ' / '.$invitation->max_uses : '' }}
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <div class="mb-2">
+                                                <strong class="text-primary">{{ $invitation->code }}</strong>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary ml-2 copy-code-btn" data-code="{{ $invitation->code }}" title="{{ __('Copiar código') }}">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <div class="mb-2">
+                                                <small class="text-muted d-block">{{ __('Link directo:') }}</small>
+                                                <div class="input-group input-group-sm">
+                                                    <input type="text" class="form-control form-control-sm" value="{{ $invitation->direct_link }}" readonly id="link-{{ $invitation->id }}">
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="btn btn-outline-secondary copy-link-btn" data-link="{{ $invitation->direct_link }}" title="{{ __('Copiar link') }}">
+                                                            <i class="fas fa-copy"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="small text-muted">
+                                                {{ __('Usos') }}: {{ $invitation->uses_count }}{{ $invitation->max_uses ? ' / '.$invitation->max_uses : '' }}
+                                                @if ($invitation->expires_at)
+                                                    <br>{{ __('Expira:') }} {{ $invitation->expires_at->format('d/m/Y H:i') }}
+                                                @endif
+                                            </div>
                                         </div>
-                                        @if ($invitation->expires_at)
-                                            <div class="small text-muted">{{ __('Expira:') }} {{ $invitation->expires_at->format('d/m/Y H:i') }}</div>
-                                        @endif
+                                        <span class="badge {{ $invitation->is_active ? 'badge-success' : 'badge-secondary' }} ml-2">
+                                            {{ $invitation->is_active ? __('Activo') : __('Inactivo') }}
+                                        </span>
                                     </div>
-                                    <span class="badge {{ $invitation->is_active ? 'badge-success' : 'badge-secondary' }}">
-                                        {{ $invitation->is_active ? __('Activo') : __('Inactivo') }}
-                                    </span>
                                 </li>
                             @endforeach
                         </ul>
@@ -366,6 +384,49 @@
                     },
                 });
             }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Funcionalidad de copiar código
+            document.querySelectorAll('.copy-code-btn').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const code = this.dataset.code;
+                    if (!code) {
+                        return;
+                    }
+                    navigator.clipboard.writeText(code).then(() => {
+                        this.classList.remove('btn-outline-secondary');
+                        this.classList.add('btn-success');
+                        this.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                            this.classList.add('btn-outline-secondary');
+                            this.classList.remove('btn-success');
+                            this.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 1500);
+                    });
+                });
+            });
+            
+            // Funcionalidad de copiar link
+            document.querySelectorAll('.copy-link-btn').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const link = this.dataset.link;
+                    if (!link) {
+                        return;
+                    }
+                    navigator.clipboard.writeText(link).then(() => {
+                        this.classList.remove('btn-outline-secondary');
+                        this.classList.add('btn-success');
+                        this.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                            this.classList.add('btn-outline-secondary');
+                            this.classList.remove('btn-success');
+                            this.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 1500);
+                    });
+                });
+            });
         });
     </script>
     @endpush

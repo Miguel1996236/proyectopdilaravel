@@ -71,6 +71,18 @@
             <div class="invalid-feedback d-block">{{ $message }}</div>
         @enderror
     </div>
+    <div class="form-group col-md-4">
+        <label for="target_audience" class="font-weight-bold">{{ __('Dirigida a') }}</label>
+        <select name="target_audience" id="target_audience" class="form-control @error('target_audience') is-invalid @enderror">
+            <option value="all" @selected(old('target_audience', $quiz->target_audience ?? 'all') === 'all')>{{ __('Todos los usuarios') }}</option>
+            <option value="students" @selected(old('target_audience', $quiz->target_audience ?? 'all') === 'students')>{{ __('Solo estudiantes') }}</option>
+            <option value="teachers" @selected(old('target_audience', $quiz->target_audience ?? 'all') === 'teachers')>{{ __('Solo docentes') }}</option>
+        </select>
+        <small class="form-text text-muted">{{ __('Define quién puede responder esta encuesta') }}</small>
+        @error('target_audience')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
 </div>
 
 <div class="form-group">

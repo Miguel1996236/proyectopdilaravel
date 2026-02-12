@@ -44,6 +44,7 @@ class QuizController extends Controller
             'status' => 'draft',
             'max_attempts' => 1,
             'require_login' => true,
+            'target_audience' => 'all',
         ]);
 
         return view('quizzes.create', compact('quiz'));
@@ -63,6 +64,7 @@ class QuizController extends Controller
                 'closes_at' => $request->input('closes_at'),
                 'max_attempts' => $request->input('max_attempts', 1),
                 'require_login' => $request->boolean('require_login'),
+                'target_audience' => $request->input('target_audience', 'all'),
                 'settings' => $request->input('settings'),
             ]);
 

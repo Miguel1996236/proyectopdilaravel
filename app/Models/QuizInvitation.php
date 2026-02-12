@@ -78,5 +78,13 @@ class QuizInvitation extends Model
 
         return is_null($remaining) || $remaining > 0;
     }
+
+    /**
+     * Obtener el link directo para responder la encuesta
+     */
+    public function getDirectLinkAttribute(): string
+    {
+        return route('surveys.respond.show', $this->code);
+    }
 }
 

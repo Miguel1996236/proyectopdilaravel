@@ -147,31 +147,28 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label class="font-weight-bold">{{ __('Límite de usos') }}</label>
-                                <input type="number" min="1" name="max_uses" class="form-control form-control-sm @error('max_uses') is-invalid @enderror" value="{{ old('max_uses') }}">
-                                @error('max_uses')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="font-weight-bold">{{ __('Expira el') }}</label>
-                                <div class="row no-gutters">
-                                    <div class="col-6 pr-1">
-                                        <input type="date" id="expires_at_date" class="form-control form-control-sm @error('expires_at') is-invalid @enderror" placeholder="{{ __('Fecha') }}" value="{{ old('expires_at') ? \Carbon\Carbon::parse(old('expires_at'))->format('Y-m-d') : '' }}">
-                                    </div>
-                                    <div class="col-6 pl-1">
-                                        <input type="time" id="expires_at_time" class="form-control form-control-sm @error('expires_at') is-invalid @enderror" placeholder="{{ __('Hora') }}" value="{{ old('expires_at') ? \Carbon\Carbon::parse(old('expires_at'))->format('H:i') : '' }}">
-                                    </div>
-                                </div>
-                                <input type="hidden" name="expires_at" id="expires_at" value="{{ old('expires_at') }}">
-                                <small class="form-text text-muted">{{ __('Opcional: Deja vacío para que no expire') }}</small>
-                                @error('expires_at')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold">{{ __('Límite de usos') }}</label>
+                            <input type="number" min="1" name="max_uses" class="form-control form-control-sm @error('max_uses') is-invalid @enderror" value="{{ old('max_uses') }}" placeholder="{{ __('Opcional: Número máximo de veces que se puede usar este código') }}">
+                            <small class="form-text text-muted">{{ __('Deja vacío para permitir usos ilimitados') }}</small>
+                            @error('max_uses')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold">{{ __('Fecha de expiración') }}</label>
+                            <input type="date" id="expires_at_date" class="form-control form-control-sm @error('expires_at') is-invalid @enderror" placeholder="{{ __('Fecha') }}" value="{{ old('expires_at') ? \Carbon\Carbon::parse(old('expires_at'))->format('Y-m-d') : '' }}">
+                            <small class="form-text text-muted">{{ __('Opcional: Fecha en que expira el código') }}</small>
+                            @error('expires_at')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold">{{ __('Hora de expiración') }}</label>
+                            <input type="time" id="expires_at_time" class="form-control form-control-sm @error('expires_at') is-invalid @enderror" placeholder="{{ __('Hora') }}" value="{{ old('expires_at') ? \Carbon\Carbon::parse(old('expires_at'))->format('H:i') : '' }}">
+                            <small class="form-text text-muted">{{ __('Opcional: Hora en que expira el código (requiere fecha)') }}</small>
+                        </div>
+                        <input type="hidden" name="expires_at" id="expires_at" value="{{ old('expires_at') }}">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" class="custom-control-input" id="invitation-active" name="is_active" value="1" checked>
@@ -190,11 +187,22 @@
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
                                             <strong class="h6 mb-1">{{ $invitation->label ?? __('Código sin título') }}</strong>
-                                            <div class="font-weight-bold text-primary d-flex align-items-center">
+                                            <div class="font-weight-bold text-primary d-flex align-items-center mb-2">
                                                 <span class="mr-2">{{ $invitation->code }}</span>
                                                 <button type="button" class="btn btn-sm btn-outline-secondary copy-code-btn" data-code="{{ $invitation->code }}" title="{{ __('Copiar código') }}">
                                                     <i class="fas fa-copy"></i>
                                                 </button>
+                                            </div>
+                                            <div class="mb-2">
+                                                <small class="text-muted d-block mb-1">{{ __('Link directo:') }}</small>
+                                                <div class="input-group input-group-sm">
+                                                    <input type="text" class="form-control form-control-sm" value="{{ $invitation->direct_link }}" readonly id="link-{{ $invitation->id }}">
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="btn btn-outline-secondary copy-link-btn" data-link="{{ $invitation->direct_link }}" title="{{ __('Copiar link') }}">
+                                                            <i class="fas fa-copy"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="small text-muted">
                                                 {{ __('Generado') }}: {{ $invitation->created_at->format('d/m/Y H:i') }}
@@ -313,6 +321,26 @@
                         return;
                     }
                     navigator.clipboard.writeText(code).then(() => {
+                        this.classList.remove('btn-outline-secondary');
+                        this.classList.add('btn-success');
+                        this.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                            this.classList.add('btn-outline-secondary');
+                            this.classList.remove('btn-success');
+                            this.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 1500);
+                    });
+                });
+            });
+            
+            // Funcionalidad de copiar link
+            document.querySelectorAll('.copy-link-btn').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const link = this.dataset.link;
+                    if (!link) {
+                        return;
+                    }
+                    navigator.clipboard.writeText(link).then(() => {
                         this.classList.remove('btn-outline-secondary');
                         this.classList.add('btn-success');
                         this.innerHTML = '<i class="fas fa-check"></i>';

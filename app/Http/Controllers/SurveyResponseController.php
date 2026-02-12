@@ -30,6 +30,24 @@ class SurveyResponseController extends Controller
                 ->with('status', __('Inicia sesión para completar la encuesta.'));
         }
 
+        // Verificar si el usuario tiene el rol permitido para responder
+        if (Auth::check()) {
+            $user = Auth::user();
+            $targetAudience = $invitation->quiz->target_audience ?? 'all';
+            
+            if ($targetAudience === 'students' && $user->role !== \App\Models\User::ROLE_STUDENT) {
+                return redirect()
+                    ->route('surveys.access.form')
+                    ->withErrors(['code' => __('Esta encuesta está dirigida solo a estudiantes.')]);
+            }
+            
+            if ($targetAudience === 'teachers' && $user->role !== \App\Models\User::ROLE_TEACHER) {
+                return redirect()
+                    ->route('surveys.access.form')
+                    ->withErrors(['code' => __('Esta encuesta está dirigida solo a docentes.')]);
+            }
+        }
+
         if (! $invitation->is_valid) {
             return redirect()
                 ->route('surveys.access.form')
@@ -65,6 +83,24 @@ class SurveyResponseController extends Controller
 
             return redirect()->route('login')
                 ->with('status', __('Inicia sesión para completar la encuesta.'));
+        }
+
+        // Verificar si el usuario tiene el rol permitido para responder
+        if (Auth::check()) {
+            $user = Auth::user();
+            $targetAudience = $invitation->quiz->target_audience ?? 'all';
+            
+            if ($targetAudience === 'students' && $user->role !== \App\Models\User::ROLE_STUDENT) {
+                return redirect()
+                    ->route('surveys.access.form')
+                    ->withErrors(['code' => __('Esta encuesta está dirigida solo a estudiantes.')]);
+            }
+            
+            if ($targetAudience === 'teachers' && $user->role !== \App\Models\User::ROLE_TEACHER) {
+                return redirect()
+                    ->route('surveys.access.form')
+                    ->withErrors(['code' => __('Esta encuesta está dirigida solo a docentes.')]);
+            }
         }
 
         if (! $invitation->is_valid) {

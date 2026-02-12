@@ -310,3 +310,113 @@ body.bg-gradient-primary:not([id="page-top"]) .container-fluid {
 .form-group .row.no-gutters .col-6 input {
     width: 100%;
 }
+
+/* ── Aplicar border-radius rounded-4 a elementos del formulario de encuestas ── */
+.card-header,
+.card-body {
+    border-radius: 0.5rem !important;
+}
+
+.card-header {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.card-body {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
+/* Inputs y selects del formulario */
+.form-control,
+.form-control:focus,
+select.form-control,
+textarea.form-control {
+    border-radius: 0.5rem !important;
+}
+
+/* Botones */
+.btn,
+.btn-sm,
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-danger,
+.btn-outline-warning,
+.btn-primary,
+.btn-light {
+    border-radius: 0.5rem !important;
+}
+
+/* List group items */
+.list-group-item {
+    border-radius: 0.5rem !important;
+    margin-bottom: 0.5rem;
+}
+
+.list-group-item:first-child {
+    border-top-left-radius: 0.5rem !important;
+    border-top-right-radius: 0.5rem !important;
+}
+
+.list-group-item:last-child {
+    border-bottom-left-radius: 0.5rem !important;
+    border-bottom-right-radius: 0.5rem !important;
+}
+
+/* Input groups */
+.input-group .form-control {
+    border-radius: 0.5rem 0 0 0.5rem !important;
+}
+
+.input-group-append .btn {
+    border-radius: 0 0.5rem 0.5rem 0 !important;
+}
+
+/* Custom switch */
+.custom-control-input:checked ~ .custom-control-label::before {
+    border-radius: 0.5rem !important;
+}
+
+.custom-switch .custom-control-label::before {
+    border-radius: 0.5rem !important;
+}
+
+/* ── Mejoras responsive para formularios de códigos de invitación ── */
+@media (max-width: 767.98px) {
+    /* Asegurar que los campos de fecha y hora tengan espacio en móviles */
+    #expires_at_date,
+    #expires_at_time {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Asegurar que los badges no se corten */
+    .badge {
+        word-break: break-word;
+        white-space: normal;
+    }
+    
+    /* Mejorar espaciado en formularios */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    /* Asegurar que los inputs tengan buen tamaño en móviles */
+    .form-control-sm {
+        font-size: 1rem;
+        padding: 0.5rem;
+    }
+    
+    /* Mejorar el badge del código en la página de responder */
+    .badge-pill {
+        display: block;
+        text-align: center;
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* Asegurar que los campos de fecha y hora tengan buen tamaño en todos los dispositivos */
+#expires_at_date,
+#expires_at_time {
+    min-height: 38px;
+}

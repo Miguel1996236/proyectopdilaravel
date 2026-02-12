@@ -54,16 +54,22 @@
                                     </button>
                                 </form>
 
-                                <hr class="my-4">
+                                    <hr class="my-4">
 
-                                <div class="text-center">
-                                    @if (Route::has('password.request'))
-                                        <a class="small text-primary" href="{{ route('password.request') }}">{{ __('¿Olvidaste tu contraseña?') }}</a>
-                                    @endif
-                                </div>
-                                <div class="text-center mt-2">
-                                    <a class="small text-primary" href="{{ route('register') }}">{{ __('Crear una cuenta nueva') }}</a>
-                                </div>
+                                    <div class="text-center mb-3">
+                                        <a href="{{ route('surveys.access.form') }}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-key mr-1"></i>{{ __('Ingresar código de encuesta') }}
+                                        </a>
+                                    </div>
+
+                                    <div class="text-center">
+                                        @if (Route::has('password.request'))
+                                            <a class="small text-primary" href="{{ route('password.request') }}">{{ __('¿Olvidaste tu contraseña?') }}</a>
+                                        @endif
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <a class="small text-primary" href="{{ route('register') }}">{{ __('Crear una cuenta nueva') }}</a>
+                                    </div>
                             </div>
                         </div>
                     </div>

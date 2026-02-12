@@ -24,6 +24,7 @@ class UpdateQuizRequest extends FormRequest
             'closes_at' => ['nullable', 'date', 'after_or_equal:opens_at'],
             'max_attempts' => ['nullable', 'integer', 'min:1'],
             'require_login' => ['nullable', 'boolean'],
+            'target_audience' => ['nullable', Rule::in(['all', 'students', 'teachers'])],
             'settings' => ['nullable', 'array'],
         ];
     }
