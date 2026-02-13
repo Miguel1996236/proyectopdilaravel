@@ -28,6 +28,8 @@ Route::get('/dashboard', DashboardController::class)
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('quizzes', QuizController::class);
+    Route::get('quizzes-crear/desde-plantilla', [QuizController::class, 'createFromTemplate'])->name('quizzes.create-from-template');
+    Route::post('quizzes-crear/desde-plantilla', [QuizController::class, 'storeFromTemplate'])->name('quizzes.store-from-template');
     Route::post('quizzes/{quiz}/publish', [QuizController::class, 'publish'])->name('quizzes.publish');
     Route::post('quizzes/{quiz}/close', [QuizController::class, 'close'])->name('quizzes.close');
     Route::post('quizzes/{quiz}/analysis', [QuizController::class, 'analyze'])->name('quizzes.analyze');

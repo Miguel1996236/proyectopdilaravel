@@ -51,6 +51,8 @@ class QuizController extends Controller
 
     public function create(): View
     {
+        $this->ensureTeacherOrAdmin();
+
         $quiz = new Quiz([
             'status' => 'draft',
             'max_attempts' => 1,
@@ -61,6 +63,98 @@ class QuizController extends Controller
         ]);
 
         return view('quizzes.create', compact('quiz'));
+    }
+
+    public function createFromTemplate(): View
+    {
+        $this->ensureTeacherOrAdmin();
+
+        $templates = collect(config('survey_templates.templates', []));
+
+        return view('quizzes.create-from-template', compact('templates'));
+    }
+
+    public function storeFromTemplate(\Illuminate\Http\Request $request): RedirectResponse
+    {
+        $this->ensureTeacherOrAdmin();
+
+        $request->validate([
+            'template_key' => ['required', 'string', 'in:' . implode(',', array_keys(config('survey_templates.templates', [])))],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+        ]);
+
+        $templateKey = $request->input('template_key');
+        $templates = config('survey_templates.templates', []);
+        $template = $templates[$templateKey] ?? null;
+
+        if (!$template || empty($template['questions'])) {
+            return redirect()
+                ->route('quizzes.create-from-template')
+                ->with('error', __('Plantilla no válida.'));
+        }
+
+        $quiz = null;
+
+        DB::transaction(function () use (&$quiz, $request, $template) {
+            $quiz = Quiz::create([
+                'user_id' => $request->user()->id,
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
+                'status' => 'draft',
+                'opens_at' => null,
+                'closes_at' => null,
+                'max_attempts' => 1,
+                'require_login' => true,
+                'target_audience' => 'all',
+                'randomize_questions' => false,
+                'theme_color' => '#4e73df',
+            ]);
+
+            foreach ($template['questions'] as $position => $questionData) {
+                $question = $quiz->questions()->create([
+                    'title' => $questionData['title'],
+                    'description' => $questionData['description'] ?? null,
+                    'type' => $questionData['type'],
+                    'position' => $position + 1,
+                    'weight' => 1,
+                    'settings' => $this->extractTemplateQuestionSettings($questionData),
+                ]);
+
+                if (!empty($questionData['options']) && in_array($questionData['type'], ['multiple_choice', 'multi_select'], true)) {
+                    foreach ($questionData['options'] as $optionPosition => $optionData) {
+                        $question->options()->create([
+                            'label' => $optionData['label'],
+                            'value' => $optionData['value'] ?? null,
+                            'is_correct' => $optionData['is_correct'] ?? false,
+                            'position' => $optionPosition + 1,
+                        ]);
+                    }
+                }
+            }
+        });
+
+        return redirect()
+            ->route('quizzes.edit', $quiz)
+            ->with('status', __('Encuesta creada desde plantilla. Revisa las preguntas y personaliza si lo deseas.'));
+    }
+
+    protected function extractTemplateQuestionSettings(array $questionData): ?array
+    {
+        if (($questionData['type'] ?? null) !== 'scale') {
+            return null;
+        }
+
+        $settings = $questionData['settings'] ?? [];
+        $min = $settings['scale_min'] ?? 1;
+        $max = $settings['scale_max'] ?? 5;
+        $step = $settings['scale_step'] ?? 1;
+
+        return [
+            'scale_min' => (int) $min,
+            'scale_max' => (int) $max,
+            'scale_step' => max(1, (int) $step),
+        ];
     }
 
     public function store(StoreQuizRequest $request): RedirectResponse

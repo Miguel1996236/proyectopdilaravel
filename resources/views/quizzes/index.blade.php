@@ -13,12 +13,17 @@
                 {{ __('Listado de encuestas') }}
             </h6>
             @if (in_array($user->role, [$user::ROLE_ADMIN, $user::ROLE_TEACHER], true))
-                <a href="{{ route('quizzes.create') }}" class="btn btn-sm btn-primary btn-icon-split">
-                    <span class="icon text-white-50">
-                        <i class="fas fa-plus"></i>
-                    </span>
-                    <span class="text">{{ __('Nueva encuesta') }}</span>
-                </a>
+                <div class="d-flex flex-wrap">
+                    <a href="{{ route('quizzes.create') }}" class="btn btn-sm btn-primary btn-icon-split">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-plus"></i>
+                        </span>
+                        <span class="text">{{ __('Nueva encuesta') }}</span>
+                    </a>
+                    <a href="{{ route('quizzes.create-from-template') }}" class="btn btn-sm btn-outline-primary ml-2" title="{{ __('Crear desde plantilla predefinida') }}">
+                        <i class="fas fa-magic mr-1"></i>{{ __('Desde plantilla') }}
+                    </a>
+                </div>
             @endif
         </div>
         <div class="card-body p-0">
@@ -111,9 +116,14 @@
                     <img src="{{ asset('img/undraw_rocket.svg') }}" alt="{{ __('Sin encuestas') }}" width="120" class="mb-4 opacity-75">
                     <h5 class="text-muted mb-3">{{ __('Aún no tienes encuestas creadas') }}</h5>
                     @if (in_array($user->role, [$user::ROLE_ADMIN, $user::ROLE_TEACHER], true))
-                        <a href="{{ route('quizzes.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus mr-1"></i>{{ __('Crear la primera encuesta') }}
-                        </a>
+                        <div class="d-flex flex-column flex-sm-row justify-content-center">
+                            <a href="{{ route('quizzes.create') }}" class="btn btn-primary mb-2 mb-sm-0 mr-sm-2">
+                                <i class="fas fa-plus mr-1"></i>{{ __('Crear encuesta') }}
+                            </a>
+                            <a href="{{ route('quizzes.create-from-template') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-magic mr-1"></i>{{ __('Desde plantilla') }}
+                            </a>
+                        </div>
                     @endif
                 </div>
             @endif
