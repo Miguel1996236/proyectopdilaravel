@@ -175,9 +175,11 @@
         </div>
 
         <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold text-primary">{{ __('Análisis con IA') }}</h6>
+            <div class="card shadow mb-4 border-left-info">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #f8f9fc 0%, #eef1f8 100%);">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-robot mr-1"></i>{{ __('Análisis con IA') }}
+                    </h6>
                     @if ($analysisSummary['status'])
                         @php
                             $statusClasses = [
@@ -206,38 +208,29 @@
                             </p>
                         @endif
 
+                        {{-- Resumen ejecutivo --}}
                         @if ($analysisSummary['summary'])
-                            <p class="font-weight-semibold text-gray-800 mb-3">{{ $analysisSummary['summary'] }}</p>
+                            <div class="mb-3 p-3 rounded" style="background-color: #f0f3ff; border-left: 3px solid #4e73df;">
+                                <h6 class="font-weight-bold text-primary mb-2" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                    <i class="fas fa-file-alt mr-1"></i>{{ __('Resumen ejecutivo') }}
+                                </h6>
+                                <p class="mb-0 text-gray-800" style="font-size: 0.9rem; line-height: 1.6;">{{ $analysisSummary['summary'] }}</p>
+                            </div>
                         @endif
 
+                        {{-- Hallazgos cuantitativos --}}
                         @if (! empty($analysisSummary['quantitative']))
-                            <h6 class="text-secondary text-uppercase small font-weight-bold">{{ __('Hallazgos cuantitativos') }}</h6>
-                            <ul class="list-unstyled small text-muted mb-3">
+                            <div class="mb-3">
+                                <h6 class="font-weight-bold text-primary mb-2" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                    <i class="fas fa-chart-bar mr-1"></i>{{ __('Hallazgos por pregunta') }}
+                                </h6>
                                 @foreach ($analysisSummary['quantitative'] as $finding)
-                                    <li class="mb-2">
-                                        <strong>{{ $finding['question'] }}</strong>
+                                    <div class="mb-2 p-2 rounded" style="background-color: #f8f9fc;">
+                                        <strong class="d-block text-gray-800" style="font-size: 0.85rem;">{{ $finding['question'] }}</strong>
                                         @if (! empty($finding['key_findings']))
-                                            <ul class="mt-1 mb-0 pl-3">
+                                            <ul class="mt-1 mb-0 pl-3" style="font-size: 0.85rem;">
                                                 @foreach ($finding['key_findings'] as $item)
-                                                    <li>{{ $item }}</li>
-                                                @endforeach
-                                            </ul>
-                                        @endif
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
-
-                        @if (! empty($analysisSummary['qualitative']))
-                            <h6 class="text-secondary text-uppercase small font-weight-bold">{{ __('Temas cualitativos') }}</h6>
-                            <div class="small text-muted mb-3">
-                                @foreach ($analysisSummary['qualitative'] as $theme)
-                                    <div class="mb-2">
-                                        <strong class="d-block">{{ $theme['theme'] }}</strong>
-                                        @if (! empty($theme['evidence']))
-                                            <ul class="pl-3 mb-0 mt-1">
-                                                @foreach ($theme['evidence'] as $quote)
-                                                    <li>“{{ $quote }}”</li>
+                                                    <li class="text-gray-700">{{ $item }}</li>
                                                 @endforeach
                                             </ul>
                                         @endif
@@ -246,13 +239,40 @@
                             </div>
                         @endif
 
-                        @if (! empty($analysisSummary['recommendations']))
-                            <h6 class="text-secondary text-uppercase small font-weight-bold">{{ __('Recomendaciones') }}</h6>
-                            <ul class="small text-muted mb-0">
-                                @foreach ($analysisSummary['recommendations'] as $recommendation)
-                                    <li>{{ $recommendation }}</li>
+                        {{-- Temas cualitativos --}}
+                        @if (! empty($analysisSummary['qualitative']))
+                            <div class="mb-3">
+                                <h6 class="font-weight-bold text-primary mb-2" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                    <i class="fas fa-comments mr-1"></i>{{ __('Temas detectados') }}
+                                </h6>
+                                @foreach ($analysisSummary['qualitative'] as $theme)
+                                    <div class="mb-2 p-2 rounded" style="background-color: #f8f9fc;">
+                                        <strong class="d-block text-gray-800" style="font-size: 0.85rem;">{{ $theme['theme'] }}</strong>
+                                        @if (! empty($theme['evidence']))
+                                            @foreach ($theme['evidence'] as $quote)
+                                                <div class="mt-1 pl-2 text-gray-600" style="font-size: 0.8rem; border-left: 2px solid #36b9cc; font-style: italic;">
+                                                    "{{ $quote }}"
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
                                 @endforeach
-                            </ul>
+                            </div>
+                        @endif
+
+                        {{-- Recomendaciones --}}
+                        @if (! empty($analysisSummary['recommendations']))
+                            <div class="mb-0">
+                                <h6 class="font-weight-bold text-primary mb-2" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                    <i class="fas fa-lightbulb mr-1"></i>{{ __('Recomendaciones') }}
+                                </h6>
+                                @foreach ($analysisSummary['recommendations'] as $index => $recommendation)
+                                    <div class="mb-2 p-2 rounded d-flex align-items-start" style="background-color: #f0faf0; border-left: 3px solid #1cc88a;">
+                                        <span class="badge badge-success mr-2 mt-1" style="min-width: 22px; font-size: 0.7rem;">{{ $index + 1 }}</span>
+                                        <span class="text-gray-800" style="font-size: 0.85rem; line-height: 1.5;">{{ $recommendation }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         @endif
                     @elseif ($quiz->status === 'closed')
                         @if ($analysisSummary['status'] === 'failed')
@@ -428,7 +448,7 @@
                     });
                 });
             });
-            
+
             // Funcionalidad de copiar link
             document.querySelectorAll('.copy-link-btn').forEach(function (button) {
                 button.addEventListener('click', function () {
@@ -452,4 +472,3 @@
     </script>
     @endpush
 </x-app-layout>
-

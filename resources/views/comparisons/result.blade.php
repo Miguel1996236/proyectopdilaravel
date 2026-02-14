@@ -110,23 +110,118 @@
     {{-- Análisis IA --}}
     @if (!empty($aiAnalysis))
         <div class="card shadow mb-4 border-left-success">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #f0faf0 0%, #e8f5e9 100%);">
                 <h6 class="m-0 font-weight-bold text-success">
                     <i class="fas fa-robot mr-1"></i>{{ __('Análisis comparativo con IA') }}
                 </h6>
-                @if (isset($comparison) && $comparison?->analyzed_at)
-                    <span class="text-muted small">
-                        <i class="fas fa-clock mr-1"></i>{{ __('Generado el :date', ['date' => $comparison->analyzed_at->format('d/m/Y H:i')]) }}
+                <div class="d-flex align-items-center">
+                    @if (isset($comparison) && $comparison?->analyzed_at)
+                        <span class="text-muted small mr-3">
+                            <i class="fas fa-clock mr-1"></i>{{ __('Generado el :date', ['date' => $comparison->analyzed_at->format('d/m/Y H:i')]) }}
+                        </span>
+                    @endif
+                    <span class="badge badge-success" style="font-size: 0.65rem;">
+                        <i class="fas fa-brain mr-1"></i>{{ __('Generado por IA') }}
                     </span>
-                @endif
+                </div>
             </div>
             <div class="card-body">
-                <div class="ai-analysis-content">
+                {{-- Contenido del análisis con estilos profesionales --}}
+                <style>
+                    .ai-comparison-content {
+                        font-size: 0.95rem;
+                        line-height: 1.8;
+                        color: #3a3b45;
+                    }
+                    .ai-comparison-content h1 {
+                        font-size: 1.4rem;
+                        font-weight: 700;
+                        color: #2e59d9;
+                        border-bottom: 2px solid #4e73df;
+                        padding-bottom: 0.5rem;
+                        margin-top: 1.5rem;
+                        margin-bottom: 1rem;
+                    }
+                    .ai-comparison-content h2 {
+                        font-size: 1.2rem;
+                        font-weight: 700;
+                        color: #4e73df;
+                        border-bottom: 1px solid #e3e6f0;
+                        padding-bottom: 0.4rem;
+                        margin-top: 1.5rem;
+                        margin-bottom: 0.8rem;
+                    }
+                    .ai-comparison-content h3 {
+                        font-size: 1.05rem;
+                        font-weight: 600;
+                        color: #5a5c69;
+                        margin-top: 1.2rem;
+                        margin-bottom: 0.6rem;
+                    }
+                    .ai-comparison-content h4 {
+                        font-size: 0.95rem;
+                        font-weight: 600;
+                        color: #858796;
+                        margin-top: 1rem;
+                        margin-bottom: 0.5rem;
+                    }
+                    .ai-comparison-content p {
+                        margin-bottom: 0.8rem;
+                    }
+                    .ai-comparison-content ul, .ai-comparison-content ol {
+                        margin-bottom: 1rem;
+                        padding-left: 1.5rem;
+                    }
+                    .ai-comparison-content li {
+                        margin-bottom: 0.4rem;
+                        padding-left: 0.3rem;
+                    }
+                    .ai-comparison-content strong {
+                        color: #2e59d9;
+                    }
+                    .ai-comparison-content blockquote {
+                        border-left: 4px solid #4e73df;
+                        padding: 0.5rem 1rem;
+                        margin: 1rem 0;
+                        background-color: #f0f3ff;
+                        border-radius: 0 4px 4px 0;
+                        color: #5a5c69;
+                    }
+                    .ai-comparison-content table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin: 1rem 0;
+                    }
+                    .ai-comparison-content table th,
+                    .ai-comparison-content table td {
+                        border: 1px solid #e3e6f0;
+                        padding: 0.5rem 0.75rem;
+                        font-size: 0.85rem;
+                    }
+                    .ai-comparison-content table th {
+                        background-color: #f8f9fc;
+                        font-weight: 600;
+                        color: #4e73df;
+                    }
+                    .ai-comparison-content hr {
+                        border: 0;
+                        border-top: 1px solid #e3e6f0;
+                        margin: 1.5rem 0;
+                    }
+                    .ai-comparison-content code {
+                        background-color: #f8f9fc;
+                        padding: 0.15rem 0.4rem;
+                        border-radius: 3px;
+                        font-size: 0.85em;
+                        color: #e74a3b;
+                    }
+                </style>
+                <div class="ai-comparison-content">
                     {!! \Illuminate\Support\Str::markdown($aiAnalysis) !!}
                 </div>
 
-                <hr>
-                <div class="text-center">
+                <hr style="border-top: 2px solid #e3e6f0; margin-top: 1.5rem;">
+                <div class="text-center mt-3">
                     <form action="{{ route('comparisons.ai') }}" method="POST" class="d-inline js-show-loader">
                         @csrf
                         <input type="hidden" name="quiz_a" value="{{ $quizA->id }}">
@@ -159,16 +254,20 @@
 
     {{-- Botón para generar análisis IA si nunca se ha hecho --}}
     @if (empty($aiAnalysis) && empty($aiError))
-        <div class="text-center mb-4">
-            <form action="{{ route('comparisons.ai') }}" method="POST" class="d-inline js-show-loader">
-                @csrf
-                <input type="hidden" name="quiz_a" value="{{ $quizA->id }}">
-                <input type="hidden" name="quiz_b" value="{{ $quizB->id }}">
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-robot mr-1"></i>{{ __('Generar análisis con IA') }}
-                </button>
-            </form>
+        <div class="card shadow mb-4">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-robot fa-3x text-gray-300 mb-3"></i>
+                <h5 class="text-gray-800 font-weight-bold mb-2">{{ __('Análisis de IA disponible') }}</h5>
+                <p class="text-muted mb-4">{{ __('Genera un análisis comparativo detallado utilizando inteligencia artificial para obtener insights profundos sobre las diferencias entre ambas encuestas.') }}</p>
+                <form action="{{ route('comparisons.ai') }}" method="POST" class="d-inline js-show-loader">
+                    @csrf
+                    <input type="hidden" name="quiz_a" value="{{ $quizA->id }}">
+                    <input type="hidden" name="quiz_b" value="{{ $quizB->id }}">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-robot mr-2"></i>{{ __('Generar análisis con IA') }}
+                    </button>
+                </form>
+            </div>
         </div>
     @endif
 </x-app-layout>
-
