@@ -88,7 +88,7 @@ class QuizComparisonController extends Controller
         try {
             $response = $openAI->chat($prompt, [
                 'temperature' => 0.3,
-                'max_tokens' => 1200,
+                'max_tokens' => 2000,
             ]);
 
             $aiAnalysis = data_get($response, 'choices.0.message.content');
@@ -208,9 +208,9 @@ class QuizComparisonController extends Controller
         ], JSON_UNESCAPED_UNICODE);
 
         return <<<PROMPT
-Eres un analista educativo experto. Compara los resultados de estas dos encuestas educativas y proporciona un análisis detallado.
+Eres un analista pedagógico experto en evaluación educativa. Tu tarea es realizar una comparación profunda y útil entre dos encuestas educativas.
 
-**IMPORTANTE**: Las encuestas deben tener relación temática para una comparación significativa. Si no tienen relación, indícalo.
+**IMPORTANTE**: Las encuestas deben tener relación temática para una comparación significativa. Si no tienen relación, indícalo al inicio.
 
 ## Encuesta A:
 {$dataA}
@@ -218,24 +218,27 @@ Eres un analista educativo experto. Compara los resultados de estas dos encuesta
 ## Encuesta B:
 {$dataB}
 
-Proporciona tu análisis en el siguiente formato (usa markdown):
+Proporciona tu análisis usando este formato en markdown:
 
 ### 1. Resumen de la comparación
-Breve resumen de qué se está comparando y si tiene sentido hacerlo.
+Un párrafo de 3-4 oraciones explicando qué se compara, la relación entre ambas encuestas y la conclusión general.
 
 ### 2. Diferencias principales
-Enumera las diferencias más significativas entre ambas encuestas.
+Enumera las diferencias más significativas entre ambas encuestas. Para cada diferencia, incluye datos numéricos concretos (porcentajes, promedios) y explica su importancia pedagógica.
 
 ### 3. Tendencias y evolución
-Si las encuestas son del mismo tipo pero de diferentes periodos, identifica tendencias de mejora o deterioro.
+Si las encuestas son del mismo tipo pero de diferentes periodos, analiza en detalle las tendencias de mejora o deterioro. Menciona qué preguntas mejoraron, cuáles empeoraron y en qué magnitud.
 
 ### 4. Áreas de mejora detectadas
-Identifica en qué aspectos se mejoró y en cuáles no.
+Para cada área identificada, describe: (a) el problema o brecha detectada con datos, (b) el impacto en la experiencia educativa, y (c) por qué es prioritario abordarlo.
 
 ### 5. Recomendaciones pedagógicas
-Proporciona 3-5 recomendaciones concretas basadas en la comparación.
+Proporciona entre 4 y 6 recomendaciones detalladas. Cada recomendación debe incluir:
+- **Qué hacer**: La acción concreta.
+- **Por qué**: Justificación basada en los datos comparados.
+- **Cómo implementarlo**: Una sugerencia práctica de implementación.
 
-Responde siempre en español.
+Escribe siempre en español. Sé detallado, constructivo y orientado a la acción.
 PROMPT;
     }
 }

@@ -515,14 +515,28 @@ class QuizController extends Controller
 
     protected function normalizeRecommendations(mixed $value): array
     {
+        if (is_array($value)) {
+            return array_values(array_filter(array_map(function ($item) {
+                $s = is_string($item) ? trim($item) : '';
+                return $s !== '' ? $s : null;
+            }, $value)));
+        }
+
         if (is_string($value)) {
+            $trimmed = trim($value);
+            if ($trimmed === '') {
+                return [];
+            }
+            // Si es JSON (array), parsear para evitar mostrar texto crudo con \u00f3n
+            if (str_starts_with($trimmed, '[') || str_starts_with($trimmed, '{')) {
+                $decoded = json_decode($trimmed, true);
+                if (is_array($decoded)) {
+                    return $this->normalizeRecommendations($decoded);
+                }
+            }
             $lines = preg_split('/[\r\n]+/', $value) ?: [];
 
             return array_values(array_filter(array_map('trim', $lines)));
-        }
-
-        if (is_array($value)) {
-            return array_values(array_filter(array_map('trim', $value)));
         }
 
         return [];

@@ -59,8 +59,8 @@ class ProcessQuizAnalysisJob implements ShouldQueue
             $prompt = $this->buildPrompt($promptPayload);
 
             $response = $openAI->chat($prompt, [
-                'temperature' => 0.2,
-                'max_tokens' => 900,
+                'temperature' => 0.3,
+                'max_tokens' => 2000,
             ]);
 
             $content = data_get($response, 'choices.0.message.content');
@@ -123,31 +123,46 @@ class ProcessQuizAnalysisJob implements ShouldQueue
     protected function buildPrompt(array $payload): string
     {
         $instructions = <<<PROMPT
-Eres un analista pedagógico y debes interpretar los resultados de una encuesta educativa.
+Eres un analista pedagógico experto en evaluación educativa. Tu tarea es interpretar los resultados de una encuesta educativa y generar un informe detallado y útil para el docente.
 
-Revisa los datos cuantitativos y las respuestas abiertas incluidas en el JSON más abajo.
-Devuelve tu respuesta en formato JSON válido con la siguiente estructura:
+Revisa cuidadosamente los datos cuantitativos y las respuestas abiertas incluidas en el JSON más abajo.
+
+Devuelve tu respuesta ÚNICAMENTE en formato JSON válido con la siguiente estructura:
 {
-  "summary": "Resumen ejecutivo de máximo 4 oraciones",
+  "summary": "Resumen ejecutivo de 4-6 oraciones. Incluye los hallazgos más importantes, tendencias principales y una valoración general del desempeño.",
   "quantitative_insights": [
     {
-      "question": "Título de la pregunta",
-      "key_findings": ["hallazgo cuantitativo 1", "hallazgo cuantitativo 2"]
+      "question": "Título exacto de la pregunta",
+      "key_findings": [
+        "Hallazgo detallado con datos numéricos (porcentajes, promedios)",
+        "Otro hallazgo relevante con interpretación pedagógica"
+      ]
     }
   ],
   "qualitative_themes": [
     {
-      "theme": "Tema detectado",
-      "evidence": ["cita corta 1", "cita corta 2"]
+      "theme": "Nombre del tema identificado en las respuestas abiertas",
+      "evidence": ["Cita textual representativa 1", "Cita textual representativa 2"]
     }
   ],
   "recommendations": [
-    "Recomendación pedagógica 1",
-    "Recomendación pedagógica 2"
+    "Recomendación detallada 1: Describe la acción concreta, por qué es importante según los datos, y cómo implementarla.",
+    "Recomendación detallada 2: Incluye el problema detectado, la estrategia sugerida y el beneficio esperado.",
+    "Recomendación detallada 3: Otra acción con justificación basada en los resultados.",
+    "Recomendación detallada 4: Si aplica, sugerencia adicional.",
+    "Recomendación detallada 5: Si aplica, sugerencia adicional."
   ]
 }
 
-Usa un tono profesional y positivo. Si falta información para una sección, devuelve un arreglo vacío para esa sección en lugar de inventar datos.
+INSTRUCCIONES IMPORTANTES:
+- El "summary" debe ser un párrafo completo y fluido, no una lista.
+- Los "key_findings" deben incluir datos numéricos concretos (porcentajes, promedios) extraídos de los datos.
+- Los "qualitative_themes" deben agrupar respuestas abiertas por temas comunes.
+- Las "recommendations" son la sección MÁS IMPORTANTE: genera entre 3 y 5 recomendaciones. Cada una debe tener 2-3 oraciones que expliquen: (a) qué se recomienda, (b) por qué, basado en los datos, y (c) cómo podría implementarse.
+- Usa un tono profesional, constructivo y positivo.
+- Escribe todo en español.
+- Si falta información para una sección, devuelve un arreglo vacío en lugar de inventar datos.
+- NO incluyas texto fuera del JSON.
 PROMPT;
 
         return $instructions.PHP_EOL.PHP_EOL.json_encode($payload, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

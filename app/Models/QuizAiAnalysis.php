@@ -26,6 +26,7 @@ class QuizAiAnalysis extends Model
     protected $casts = [
         'quantitative_insights' => 'array',
         'qualitative_themes' => 'array',
+        'recommendations' => 'array',
         'raw_response' => 'array',
         'started_at' => 'datetime',
         'completed_at' => 'datetime',

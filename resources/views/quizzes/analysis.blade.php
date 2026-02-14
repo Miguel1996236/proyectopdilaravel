@@ -103,9 +103,10 @@
                 <div class="card shadow h-100">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">{{ __('Temas cualitativos') }}</h6>
+                        <small class="text-muted d-block mt-1" style="font-size: 0.8rem;">{{ __('Sugerencias para mejorar la experiencia educativa') }}</small>
                     </div>
                     <div class="card-body">
-                        @forelse ($analysisSummary['qualitative'] ?? [] as $theme)
+                        @forelse (($analysisSummary['qualitative'] ?? []) as $theme)
                             <div class="mb-3">
                                 <h6 class="text-gray-800 font-weight-bold mb-1">{{ $theme['theme'] ?? $theme['question'] ?? __('Tema') }}</h6>
                                 @if (! empty($theme['evidence']))
@@ -126,20 +127,50 @@
             </div>
         </div>
 
+        {{-- Respuestas abiertas (por pregunta) --}}
+        @if (! empty($qualitativeInsights))
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">{{ __('Respuestas abiertas') }}</h6>
+                    <small class="text-muted d-block mt-1" style="font-size: 0.8rem;">{{ __('Comentarios y sugerencias de los participantes') }}</small>
+                </div>
+                <div class="card-body">
+                    @foreach ($qualitativeInsights as $item)
+                        <div class="mb-4 pb-3 {{ !$loop->last ? 'border-bottom' : '' }}" style="border-color: #e3e6f0 !important;">
+                            <h6 class="text-gray-800 font-weight-bold mb-2">{{ $item['question'] ?? __('Pregunta') }}</h6>
+                            <div class="pl-3">
+                                @foreach ($item['responses'] ?? [] as $response)
+                                    <blockquote class="mb-2 pl-3 border-left border-primary" style="border-left-width: 3px !important; font-size: 0.95rem; color: #5a5c69;">
+                                        "{{ $response }}"
+                                    </blockquote>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        {{-- Recomendaciones de IA --}}
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-primary">{{ __('Recomendaciones de IA') }}</h6>
-                <span class="badge badge-light text-muted text-uppercase">{{ __('Acciones sugeridas') }}</span>
+                <span class="badge badge-success text-uppercase">{{ __('Acciones sugeridas') }}</span>
             </div>
             <div class="card-body">
                 @if (! empty($analysisSummary['recommendations']))
-                    <ul class="text-muted small mb-0">
-                        @foreach ($analysisSummary['recommendations'] as $recommendation)
-                            <li class="mb-2">{{ $recommendation }}</li>
+                    <div class="row">
+                        @foreach ($analysisSummary['recommendations'] as $index => $recommendation)
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start p-3 rounded" style="background-color: #f8f9fc; border-left: 4px solid #4e73df;">
+                                    <span class="badge badge-primary mr-2 mt-1" style="min-width: 28px;">{{ $index + 1 }}</span>
+                                    <p class="mb-0 text-gray-800" style="font-size: 0.95rem; line-height: 1.6;">{{ $recommendation }}</p>
+                                </div>
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 @else
-                    <p class="text-muted small mb-0">{{ __('La IA no generó recomendaciones para esta encuesta. Puedes regenerar el informe desde la vista principal de la encuesta.') }}</p>
+                    <p class="text-muted mb-0">{{ __('La IA no generó recomendaciones para esta encuesta. Puedes regenerar el informe desde la vista principal de la encuesta.') }}</p>
                 @endif
             </div>
         </div>
