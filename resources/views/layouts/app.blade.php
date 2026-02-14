@@ -90,16 +90,16 @@
                 </li>
             @endif
 
-            @if ($role === \App\Models\User::ROLE_STUDENT)
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-fw fa-list-check"></i>
-                        <span>Mis Encuestas</span></a>
-                </li>
+            @if (in_array($role, [\App\Models\User::ROLE_STUDENT, \App\Models\User::ROLE_TEACHER]))
+                <hr class="sidebar-divider">
+                <div class="sidebar-heading">
+                    {{ __('Participar') }}
+                </div>
+
                 <li class="nav-item {{ request()->routeIs('surveys.access.*') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('surveys.access.form') }}">
                         <i class="fas fa-fw fa-barcode"></i>
-                        <span>Usar Código</span></a>
+                        <span>{{ __('Ingresar Código') }}</span></a>
                 </li>
             @endif
 

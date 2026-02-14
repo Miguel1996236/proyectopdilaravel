@@ -156,17 +156,39 @@
                             @enderror
                         </div>
                         <div class="form-group">
-                            <label class="font-weight-bold">{{ __('Fecha de expiración') }}</label>
-                            <input type="date" id="expires_at_date" class="form-control form-control-sm @error('expires_at') is-invalid @enderror" placeholder="{{ __('Fecha') }}" value="{{ old('expires_at') ? \Carbon\Carbon::parse(old('expires_at'))->format('Y-m-d') : '' }}">
-                            <small class="form-text text-muted">{{ __('Opcional: Fecha en que expira el código') }}</small>
+                            <label class="font-weight-bold">
+                                <i class="fas fa-calendar-times text-warning mr-1"></i>{{ __('Fecha y hora de expiración') }}
+                            </label>
+                            <input type="date" id="expires_at_date" class="form-control form-control-sm mb-2 @error('expires_at') is-invalid @enderror" value="{{ old('expires_at') ? \Carbon\Carbon::parse(old('expires_at'))->format('Y-m-d') : '' }}">
+                            @php
+                                $expHour24 = old('expires_at') ? (int) \Carbon\Carbon::parse(old('expires_at'))->format('G') : null;
+                                $expMin = old('expires_at') ? \Carbon\Carbon::parse(old('expires_at'))->format('i') : null;
+                                $expAmpm = $expHour24 !== null ? ($expHour24 >= 12 ? 'PM' : 'AM') : null;
+                                $expHour12 = $expHour24 !== null ? (($expHour24 % 12) ?: 12) : null;
+                            @endphp
+                            <div class="d-flex align-items-center">
+                                <select id="expires_at_hour" class="form-control form-control-sm">
+                                    <option value="">{{ __('Hora') }}</option>
+                                    @for ($h = 1; $h <= 12; $h++)
+                                        <option value="{{ $h }}" @selected($expHour12 !== null && (int)$expHour12 === $h)>{{ $h }}</option>
+                                    @endfor
+                                </select>
+                                <span class="mx-1 font-weight-bold">:</span>
+                                <select id="expires_at_min" class="form-control form-control-sm">
+                                    <option value="">{{ __('Min') }}</option>
+                                    @foreach (['00','05','10','15','20','25','30','35','40','45','50','55'] as $m)
+                                        <option value="{{ $m }}" @selected($expMin !== null && $expMin === $m)>{{ $m }}</option>
+                                    @endforeach
+                                </select>
+                                <select id="expires_at_ampm" class="form-control form-control-sm ml-1">
+                                    <option value="AM" @selected($expAmpm === 'AM')>AM</option>
+                                    <option value="PM" @selected($expAmpm === 'PM')>PM</option>
+                                </select>
+                            </div>
+                            <small class="form-text text-muted">{{ __('Opcional: Fecha y hora en que expira el código') }}</small>
                             @error('expires_at')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
-                        </div>
-                        <div class="form-group">
-                            <label class="font-weight-bold">{{ __('Hora de expiración') }}</label>
-                            <input type="time" id="expires_at_time" class="form-control form-control-sm @error('expires_at') is-invalid @enderror" placeholder="{{ __('Hora') }}" value="{{ old('expires_at') ? \Carbon\Carbon::parse(old('expires_at'))->format('H:i') : '' }}">
-                            <small class="form-text text-muted">{{ __('Opcional: Hora en que expira el código (requiere fecha)') }}</small>
                         </div>
                         <input type="hidden" name="expires_at" id="expires_at" value="{{ old('expires_at') }}">
                         <div class="d-flex justify-content-between align-items-center">
@@ -272,44 +294,46 @@
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Función para combinar fecha y hora en el campo hidden
+            // Sincronizar selects de fecha/hora de expiración con hidden input
             function updateExpiresAt() {
-                const dateInput = document.getElementById('expires_at_date');
-                const timeInput = document.getElementById('expires_at_time');
-                const hiddenInput = document.getElementById('expires_at');
-                
-                if (dateInput && timeInput && hiddenInput) {
-                    const date = dateInput.value;
-                    const time = timeInput.value || '00:00';
-                    
-                    if (date) {
-                        hiddenInput.value = date + 'T' + time;
-                    } else {
-                        hiddenInput.value = '';
-                    }
+                const dateEl  = document.getElementById('expires_at_date');
+                const hourEl  = document.getElementById('expires_at_hour');
+                const minEl   = document.getElementById('expires_at_min');
+                const ampmEl  = document.getElementById('expires_at_ampm');
+                const hiddenEl = document.getElementById('expires_at');
+                if (!dateEl || !hourEl || !minEl || !ampmEl || !hiddenEl) return;
+
+                const d = dateEl.value;
+                let h = parseInt(hourEl.value);
+                const m = minEl.value || '00';
+                const ampm = ampmEl.value;
+
+                if (!d || isNaN(h)) {
+                    hiddenEl.value = '';
+                    return;
                 }
+
+                // Convertir 12h a 24h
+                if (ampm === 'AM' && h === 12) h = 0;
+                else if (ampm === 'PM' && h !== 12) h += 12;
+
+                const hh = String(h).padStart(2, '0');
+                hiddenEl.value = d + 'T' + hh + ':' + m;
             }
-            
-            // Actualizar cuando cambien los campos
-            const dateInput = document.getElementById('expires_at_date');
-            const timeInput = document.getElementById('expires_at_time');
-            
-            if (dateInput) {
-                dateInput.addEventListener('change', updateExpiresAt);
-            }
-            
-            if (timeInput) {
-                timeInput.addEventListener('change', updateExpiresAt);
-            }
-            
+
+            ['expires_at_date', 'expires_at_hour', 'expires_at_min', 'expires_at_ampm'].forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', updateExpiresAt);
+            });
+
             // Actualizar antes de enviar el formulario
             const form = document.querySelector('form[action*="invitations.store"]');
             if (form) {
-                form.addEventListener('submit', function(e) {
+                form.addEventListener('submit', function() {
                     updateExpiresAt();
                 });
             }
-            
+
             // Inicializar el valor si hay datos antiguos
             updateExpiresAt();
             

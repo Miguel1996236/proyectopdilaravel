@@ -230,9 +230,7 @@ class SurveyResponseController extends Controller
             $invitation->incrementUses();
         });
 
-        return redirect()
-            ->route('surveys.access.form')
-            ->with('status', __('¡Gracias por participar! Tu respuesta fue registrada.'));
+        return redirect()->route('surveys.thankyou');
     }
 
     protected function validateTargetAudience(QuizInvitation $invitation): ?RedirectResponse

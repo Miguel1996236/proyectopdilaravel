@@ -108,30 +108,57 @@
     </div>
 
     {{-- Análisis IA --}}
-    @if (isset($aiAnalysis) && $aiAnalysis)
+    @if (!empty($aiAnalysis))
         <div class="card shadow mb-4 border-left-success">
-            <div class="card-header py-3">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-success">
                     <i class="fas fa-robot mr-1"></i>{{ __('Análisis comparativo con IA') }}
                 </h6>
+                @if (isset($comparison) && $comparison?->analyzed_at)
+                    <span class="text-muted small">
+                        <i class="fas fa-clock mr-1"></i>{{ __('Generado el :date', ['date' => $comparison->analyzed_at->format('d/m/Y H:i')]) }}
+                    </span>
+                @endif
             </div>
             <div class="card-body">
                 <div class="ai-analysis-content">
                     {!! \Illuminate\Support\Str::markdown($aiAnalysis) !!}
                 </div>
+
+                <hr>
+                <div class="text-center">
+                    <form action="{{ route('comparisons.ai') }}" method="POST" class="d-inline js-show-loader">
+                        @csrf
+                        <input type="hidden" name="quiz_a" value="{{ $quizA->id }}">
+                        <input type="hidden" name="quiz_b" value="{{ $quizB->id }}">
+                        <button type="submit" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-sync-alt mr-1"></i>{{ __('Regenerar análisis con IA') }}
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     @endif
 
-    @if (isset($aiError) && $aiError)
+    @if (!empty($aiError))
         <div class="alert alert-danger">
             <i class="fas fa-exclamation-circle mr-1"></i>
             <strong>{{ __('Error al generar análisis con IA:') }}</strong> {{ $aiError }}
         </div>
+        <div class="text-center mb-4">
+            <form action="{{ route('comparisons.ai') }}" method="POST" class="d-inline js-show-loader">
+                @csrf
+                <input type="hidden" name="quiz_a" value="{{ $quizA->id }}">
+                <input type="hidden" name="quiz_b" value="{{ $quizB->id }}">
+                <button type="submit" class="btn btn-warning btn-sm">
+                    <i class="fas fa-redo mr-1"></i>{{ __('Reintentar análisis') }}
+                </button>
+            </form>
+        </div>
     @endif
 
-    {{-- Botón para volver a comparar con IA si no se hizo --}}
-    @if (!isset($aiAnalysis) && !isset($aiError))
+    {{-- Botón para generar análisis IA si nunca se ha hecho --}}
+    @if (empty($aiAnalysis) && empty($aiError))
         <div class="text-center mb-4">
             <form action="{{ route('comparisons.ai') }}" method="POST" class="d-inline js-show-loader">
                 @csrf

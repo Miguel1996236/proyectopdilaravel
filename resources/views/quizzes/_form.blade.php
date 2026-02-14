@@ -32,21 +32,89 @@
         @enderror
     </div>
     <div class="form-group col-md-4">
-        <label for="opens_at" class="font-weight-bold">{{ __('Disponible desde') }}</label>
-        <input type="datetime-local" name="opens_at" id="opens_at"
-               value="{{ old('opens_at', optional($quiz->opens_at)->format('Y-m-d\TH:i')) }}"
-               class="form-control @error('opens_at') is-invalid @enderror">
+        <label class="font-weight-bold">
+            <i class="fas fa-calendar-check text-success mr-1"></i>{{ __('Disponible desde') }}
+        </label>
+        <input type="date" id="opens_at_date"
+               value="{{ old('opens_at') ? \Illuminate\Support\Str::before(old('opens_at'), 'T') : optional($quiz->opens_at)?->format('Y-m-d') }}"
+               class="form-control mb-2 @error('opens_at') is-invalid @enderror">
+        @php
+            $opensHour24 = old('opens_at')
+                ? (int) \Illuminate\Support\Str::before(\Illuminate\Support\Str::after(old('opens_at'), 'T'), ':')
+                : optional($quiz->opens_at)?->format('G');
+            $opensMin = old('opens_at')
+                ? \Illuminate\Support\Str::after(\Illuminate\Support\Str::after(old('opens_at'), 'T'), ':')
+                : optional($quiz->opens_at)?->format('i');
+            $opensAmpm = $opensHour24 !== null ? ($opensHour24 >= 12 ? 'PM' : 'AM') : null;
+            $opensHour12 = $opensHour24 !== null ? (($opensHour24 % 12) ?: 12) : null;
+        @endphp
+        <div class="d-flex align-items-center">
+            <select id="opens_at_hour" class="form-control form-control-sm @error('opens_at') is-invalid @enderror">
+                <option value="">{{ __('Hora') }}</option>
+                @for ($h = 1; $h <= 12; $h++)
+                    <option value="{{ $h }}" @selected($opensHour12 !== null && (int)$opensHour12 === $h)>{{ $h }}</option>
+                @endfor
+            </select>
+            <span class="mx-1 font-weight-bold">:</span>
+            <select id="opens_at_min" class="form-control form-control-sm @error('opens_at') is-invalid @enderror">
+                <option value="">{{ __('Min') }}</option>
+                @foreach (['00','05','10','15','20','25','30','35','40','45','50','55'] as $m)
+                    <option value="{{ $m }}" @selected($opensMin !== null && $opensMin === $m)>{{ $m }}</option>
+                @endforeach
+            </select>
+            <select id="opens_at_ampm" class="form-control form-control-sm ml-1 @error('opens_at') is-invalid @enderror">
+                <option value="AM" @selected($opensAmpm === 'AM')>AM</option>
+                <option value="PM" @selected($opensAmpm === 'PM')>PM</option>
+            </select>
+        </div>
+        <input type="hidden" name="opens_at" id="opens_at"
+               value="{{ old('opens_at', optional($quiz->opens_at)?->format('Y-m-d\TH:i')) }}">
+        <small class="form-text text-muted">{{ __('Fecha y hora en que la encuesta estará disponible') }}</small>
         @error('opens_at')
-            <div class="invalid-feedback">{{ $message }}</div>
+            <div class="invalid-feedback d-block">{{ $message }}</div>
         @enderror
     </div>
     <div class="form-group col-md-4">
-        <label for="closes_at" class="font-weight-bold">{{ __('Disponible hasta') }}</label>
-        <input type="datetime-local" name="closes_at" id="closes_at"
-               value="{{ old('closes_at', optional($quiz->closes_at)->format('Y-m-d\TH:i')) }}"
-               class="form-control @error('closes_at') is-invalid @enderror">
+        <label class="font-weight-bold">
+            <i class="fas fa-calendar-times text-danger mr-1"></i>{{ __('Disponible hasta') }}
+        </label>
+        <input type="date" id="closes_at_date"
+               value="{{ old('closes_at') ? \Illuminate\Support\Str::before(old('closes_at'), 'T') : optional($quiz->closes_at)?->format('Y-m-d') }}"
+               class="form-control mb-2 @error('closes_at') is-invalid @enderror">
+        @php
+            $closesHour24 = old('closes_at')
+                ? (int) \Illuminate\Support\Str::before(\Illuminate\Support\Str::after(old('closes_at'), 'T'), ':')
+                : optional($quiz->closes_at)?->format('G');
+            $closesMin = old('closes_at')
+                ? \Illuminate\Support\Str::after(\Illuminate\Support\Str::after(old('closes_at'), 'T'), ':')
+                : optional($quiz->closes_at)?->format('i');
+            $closesAmpm = $closesHour24 !== null ? ($closesHour24 >= 12 ? 'PM' : 'AM') : null;
+            $closesHour12 = $closesHour24 !== null ? (($closesHour24 % 12) ?: 12) : null;
+        @endphp
+        <div class="d-flex align-items-center">
+            <select id="closes_at_hour" class="form-control form-control-sm @error('closes_at') is-invalid @enderror">
+                <option value="">{{ __('Hora') }}</option>
+                @for ($h = 1; $h <= 12; $h++)
+                    <option value="{{ $h }}" @selected($closesHour12 !== null && (int)$closesHour12 === $h)>{{ $h }}</option>
+                @endfor
+            </select>
+            <span class="mx-1 font-weight-bold">:</span>
+            <select id="closes_at_min" class="form-control form-control-sm @error('closes_at') is-invalid @enderror">
+                <option value="">{{ __('Min') }}</option>
+                @foreach (['00','05','10','15','20','25','30','35','40','45','50','55'] as $m)
+                    <option value="{{ $m }}" @selected($closesMin !== null && $closesMin === $m)>{{ $m }}</option>
+                @endforeach
+            </select>
+            <select id="closes_at_ampm" class="form-control form-control-sm ml-1 @error('closes_at') is-invalid @enderror">
+                <option value="AM" @selected($closesAmpm === 'AM')>AM</option>
+                <option value="PM" @selected($closesAmpm === 'PM')>PM</option>
+            </select>
+        </div>
+        <input type="hidden" name="closes_at" id="closes_at"
+               value="{{ old('closes_at', optional($quiz->closes_at)?->format('Y-m-d\TH:i')) }}">
+        <small class="form-text text-muted">{{ __('Fecha y hora en que se cierra la encuesta') }}</small>
         @error('closes_at')
-            <div class="invalid-feedback">{{ $message }}</div>
+            <div class="invalid-feedback d-block">{{ $message }}</div>
         @enderror
     </div>
 </div>
@@ -120,6 +188,7 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Sincronizar color
         const colorInput = document.getElementById('theme_color');
         const colorText = document.getElementById('theme_color_text');
         if (colorInput && colorText) {
@@ -127,6 +196,43 @@
                 colorText.value = this.value;
             });
         }
+
+        // Sincronizar selects de hora/min/ampm con hidden input en formato 24h
+        function syncDateTime(prefix) {
+            const dateEl  = document.getElementById(prefix + '_date');
+            const hourEl  = document.getElementById(prefix + '_hour');
+            const minEl   = document.getElementById(prefix + '_min');
+            const ampmEl  = document.getElementById(prefix + '_ampm');
+            const hiddenEl = document.getElementById(prefix);
+            if (!dateEl || !hourEl || !minEl || !ampmEl || !hiddenEl) return;
+
+            function update() {
+                const d = dateEl.value;
+                let h = parseInt(hourEl.value);
+                const m = minEl.value || '00';
+                const ampm = ampmEl.value;
+
+                if (!d || isNaN(h)) {
+                    hiddenEl.value = '';
+                    return;
+                }
+
+                // Convertir 12h a 24h
+                if (ampm === 'AM' && h === 12) h = 0;
+                else if (ampm === 'PM' && h !== 12) h += 12;
+
+                const hh = String(h).padStart(2, '0');
+                hiddenEl.value = d + 'T' + hh + ':' + m;
+            }
+
+            dateEl.addEventListener('change', update);
+            hourEl.addEventListener('change', update);
+            minEl.addEventListener('change', update);
+            ampmEl.addEventListener('change', update);
+        }
+
+        syncDateTime('opens_at');
+        syncDateTime('closes_at');
     });
 </script>
 @endpush

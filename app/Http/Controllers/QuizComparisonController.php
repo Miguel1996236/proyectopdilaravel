@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\AuthorizesQuizAccess;
 use App\Models\Quiz;
+use App\Models\QuizComparison;
 use App\Models\User;
 use App\Services\OpenAIService;
 use App\Services\QuizAnalyticsService;
@@ -40,22 +41,15 @@ class QuizComparisonController extends Controller
             'quiz_b' => ['required', 'exists:quizzes,id', 'different:quiz_a'],
         ]);
 
-        $quizA = Quiz::with(['questions.options', 'attempts.answers', 'owner'])->findOrFail($data['quiz_a']);
-        $quizB = Quiz::with(['questions.options', 'attempts.answers', 'owner'])->findOrFail($data['quiz_b']);
+        [$quizA, $quizB] = $this->loadAndAuthorizeQuizPair($data['quiz_a'], $data['quiz_b']);
 
-        // Verificar propiedad
-        $user = Auth::user();
-        if ($user->role !== User::ROLE_ADMIN) {
-            abort_if($quizA->user_id !== $user->id || $quizB->user_id !== $user->id, 403);
-        }
-
-        // Generar insights cuantitativos para ambas
         $insightsA = $analyticsService->buildQuantitativeInsights($quizA);
         $insightsB = $analyticsService->buildQuantitativeInsights($quizB);
-
-        // Estadísticas resumidas
         $statsA = $this->buildComparisonStats($quizA);
         $statsB = $this->buildComparisonStats($quizB);
+
+        // Buscar comparación guardada previamente
+        $saved = $this->findSavedComparison($quizA->id, $quizB->id);
 
         return view('comparisons.result', [
             'quizA' => $quizA,
@@ -64,6 +58,9 @@ class QuizComparisonController extends Controller
             'statsB' => $statsB,
             'insightsA' => $insightsA,
             'insightsB' => $insightsB,
+            'aiAnalysis' => $saved?->ai_analysis,
+            'aiError' => null,
+            'comparison' => $saved,
         ]);
     }
 
@@ -76,20 +73,13 @@ class QuizComparisonController extends Controller
             'quiz_b' => ['required', 'exists:quizzes,id', 'different:quiz_a'],
         ]);
 
-        $quizA = Quiz::with(['questions.options', 'attempts.answers', 'owner'])->findOrFail($data['quiz_a']);
-        $quizB = Quiz::with(['questions.options', 'attempts.answers', 'owner'])->findOrFail($data['quiz_b']);
-
-        $user = Auth::user();
-        if ($user->role !== User::ROLE_ADMIN) {
-            abort_if($quizA->user_id !== $user->id || $quizB->user_id !== $user->id, 403);
-        }
+        [$quizA, $quizB] = $this->loadAndAuthorizeQuizPair($data['quiz_a'], $data['quiz_b']);
 
         $insightsA = $analyticsService->buildQuantitativeInsights($quizA);
         $insightsB = $analyticsService->buildQuantitativeInsights($quizB);
         $statsA = $this->buildComparisonStats($quizA);
         $statsB = $this->buildComparisonStats($quizB);
 
-        // Construir prompt para comparación
         $prompt = $this->buildComparisonPrompt($quizA, $quizB, $insightsA, $insightsB, $statsA, $statsB);
 
         $aiAnalysis = null;
@@ -106,6 +96,27 @@ class QuizComparisonController extends Controller
             $aiError = $e->getMessage();
         }
 
+        // Normalizar IDs para el par (menor siempre primero)
+        [$normalizedA, $normalizedB] = $this->normalizeQuizPair($quizA->id, $quizB->id);
+
+        // Guardar o actualizar la comparación
+        $comparison = QuizComparison::updateOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'quiz_a_id' => $normalizedA,
+                'quiz_b_id' => $normalizedB,
+            ],
+            [
+                'ai_analysis' => $aiAnalysis,
+                'stats_a' => $statsA,
+                'stats_b' => $statsB,
+                'insights_a' => $insightsA,
+                'insights_b' => $insightsB,
+                'error_message' => $aiError,
+                'analyzed_at' => $aiAnalysis ? now() : null,
+            ]
+        );
+
         return view('comparisons.result', [
             'quizA' => $quizA,
             'quizB' => $quizB,
@@ -115,7 +126,49 @@ class QuizComparisonController extends Controller
             'insightsB' => $insightsB,
             'aiAnalysis' => $aiAnalysis,
             'aiError' => $aiError,
+            'comparison' => $comparison,
         ]);
+    }
+
+    /**
+     * Cargar y autorizar un par de encuestas.
+     *
+     * @return array{0: Quiz, 1: Quiz}
+     */
+    protected function loadAndAuthorizeQuizPair(int|string $idA, int|string $idB): array
+    {
+        $quizA = Quiz::with(['questions.options', 'attempts.answers', 'owner'])->findOrFail($idA);
+        $quizB = Quiz::with(['questions.options', 'attempts.answers', 'owner'])->findOrFail($idB);
+
+        $user = Auth::user();
+        if ($user->role !== User::ROLE_ADMIN) {
+            abort_if($quizA->user_id !== $user->id || $quizB->user_id !== $user->id, 403);
+        }
+
+        return [$quizA, $quizB];
+    }
+
+    /**
+     * Normalizar par de IDs (menor primero) para evitar duplicados.
+     *
+     * @return array{0: int, 1: int}
+     */
+    protected function normalizeQuizPair(int $idA, int $idB): array
+    {
+        return $idA <= $idB ? [$idA, $idB] : [$idB, $idA];
+    }
+
+    /**
+     * Buscar una comparación guardada para el par de encuestas.
+     */
+    protected function findSavedComparison(int $idA, int $idB): ?QuizComparison
+    {
+        [$normalizedA, $normalizedB] = $this->normalizeQuizPair($idA, $idB);
+
+        return QuizComparison::where('user_id', Auth::id())
+            ->where('quiz_a_id', $normalizedA)
+            ->where('quiz_b_id', $normalizedB)
+            ->first();
     }
 
     protected function buildComparisonStats(Quiz $quiz): array

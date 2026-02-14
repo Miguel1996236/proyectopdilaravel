@@ -78,6 +78,7 @@ Route::middleware('web')->group(function () {
     Route::post('ingresar-codigo', [SurveyAccessController::class, 'verifyCode'])->name('surveys.access.verify');
     Route::get('responder/{code}', [SurveyResponseController::class, 'showSurvey'])->name('surveys.respond.show');
     Route::post('responder/{code}', [SurveyResponseController::class, 'submitSurvey'])->name('surveys.respond.submit');
+    Route::get('encuesta-completada', fn () => view('surveys.thankyou'))->name('surveys.thankyou');
 });
 
 require __DIR__.'/auth.php';
