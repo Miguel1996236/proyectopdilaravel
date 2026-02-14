@@ -26,7 +26,7 @@ class QuizAnalyticsService
             }
 
             $results[] = match ($question->type) {
-                'multiple_choice' => $this->summarizeMultipleChoice($question, $answers),
+                'multiple_choice', 'true_false' => $this->summarizeMultipleChoice($question, $answers),
                 'multi_select' => $this->summarizeMultiSelect($question, $answers),
                 'scale', 'numeric' => $this->summarizeNumeric($question, $answers),
                 default => $this->summarizeGeneric($question, $answers),
@@ -107,7 +107,7 @@ class QuizAnalyticsService
         $type = $insight['type'] ?? null;
 
         return match ($type) {
-            'multiple_choice' => $this->buildPieChart($insight),
+            'multiple_choice', 'true_false' => $this->buildPieChart($insight),
             'multi_select' => $this->buildBarChart($insight),
             'scale', 'numeric' => $this->buildBarChart($insight, true),
             default => null,
@@ -154,21 +154,22 @@ class QuizAnalyticsService
             ->groupBy('question_option_id')
             ->map(fn (Collection $items) => $items->count());
 
-        $options = $question->options->map(function ($option) use ($optionCounts) {
+        $distinctRespondents = $answers
+            ->pluck('attempt_id')
+            ->filter()
+            ->unique()
+            ->count();
+
+        $options = $question->options->map(function ($option) use ($optionCounts, $distinctRespondents) {
             $count = $optionCounts->get($option->id, 0);
 
             return [
                 'option_id' => $option->id,
                 'label' => $option->label,
                 'count' => $count,
+                'percentage' => $distinctRespondents > 0 ? round(($count / $distinctRespondents) * 100, 2) : 0,
             ];
         })->all();
-
-        $distinctRespondents = $answers
-            ->pluck('attempt_id')
-            ->filter()
-            ->unique()
-            ->count();
 
         return [
             'question_id' => $question->id,

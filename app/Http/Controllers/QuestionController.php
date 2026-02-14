@@ -113,7 +113,7 @@ class QuestionController extends Controller
     protected function syncOptions(Question $question, array $data, bool $refresh = false): void
     {
         $type = $data['type'] ?? $question->type;
-        $requiresOptions = in_array($type, ['multiple_choice', 'multi_select'], true);
+        $requiresOptions = in_array($type, ['multiple_choice', 'multi_select', 'true_false'], true);
 
         if ($refresh) {
             $question->options()->delete();

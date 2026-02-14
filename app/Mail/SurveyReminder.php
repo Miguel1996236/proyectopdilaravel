@@ -18,6 +18,8 @@ class SurveyReminder extends Mailable
         public string $customMessage,
         public ?string $surveyLink = null,
         public ?string $surveyTitle = null,
+        public ?string $senderName = null,
+        public ?string $senderEmail = null,
     ) {
     }
 
@@ -64,6 +66,8 @@ class SurveyReminder extends Mailable
                 'customMessage' => $this->customMessage,
                 'surveyLink'    => $this->surveyLink,
                 'surveyTitle'   => $this->surveyTitle,
+                'senderName'    => $this->senderName,
+                'senderEmail'   => $this->senderEmail,
             ],
         );
     }

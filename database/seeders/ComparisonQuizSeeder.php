@@ -165,7 +165,7 @@ class ComparisonQuizSeeder extends Seeder
                 'weight' => 1,
             ]);
 
-            if (isset($qData['options']) && in_array($qData['type'], ['multiple_choice', 'multi_select', 'scale'])) {
+            if (isset($qData['options']) && in_array($qData['type'], ['multiple_choice', 'multi_select', 'true_false', 'scale'])) {
                 foreach ($qData['options'] as $optPos => $optData) {
                     QuestionOption::create([
                         'question_id' => $question->id,
@@ -215,6 +215,7 @@ class ComparisonQuizSeeder extends Seeder
                         break;
 
                     case 'multiple_choice':
+                    case 'true_false':
                         $biasedIndex = $biases['choice_bias'][array_rand($biases['choice_bias'])];
                         $option = $question->options[$biasedIndex] ?? $question->options->random();
                         QuizAnswer::create([

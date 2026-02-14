@@ -45,6 +45,8 @@ class GenerateScheduledReports extends Command
                     customMessage: $message,
                     surveyLink: route('reports.summary'),
                     surveyTitle: null,
+                    senderName: $teacher->name,
+                    senderEmail: $teacher->email,
                 ));
 
                 $sentCount++;

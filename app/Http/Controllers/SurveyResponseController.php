@@ -135,13 +135,19 @@ class SurveyResponseController extends Controller
 
                 switch ($question->type) {
                     case 'multiple_choice':
-                        $maxScore++;
+                    case 'true_false':
                         $optionId = (int) $value;
                         $option = $question->options->firstWhere('id', $optionId);
-                        $isCorrect = $option ? (bool) $option->is_correct : false;
+                        $hasCorrectOptions = $question->options->where('is_correct', true)->isNotEmpty();
 
-                        if ($isCorrect) {
-                            $score++;
+                        if ($hasCorrectOptions) {
+                            $maxScore++;
+                            $isCorrect = $option ? (bool) $option->is_correct : false;
+                            if ($isCorrect) {
+                                $score++;
+                            }
+                        } else {
+                            $isCorrect = null;
                         }
 
                         QuizAnswer::create([
@@ -159,6 +165,8 @@ class SurveyResponseController extends Controller
                             ->unique()
                             ->values();
 
+                        $hasCorrectOptions = $question->options->where('is_correct', true)->isNotEmpty();
+
                         foreach ($selectedIds as $optionId) {
                             $option = $question->options->firstWhere('id', $optionId);
 
@@ -167,7 +175,7 @@ class SurveyResponseController extends Controller
                                 'question_id' => $question->id,
                                 'question_option_id' => $option?->id,
                                 'answer_text' => $option?->label,
-                                'is_correct' => $option ? (bool) $option->is_correct : false,
+                                'is_correct' => $hasCorrectOptions ? ($option ? (bool) $option->is_correct : false) : null,
                             ]);
                         }
 
@@ -292,6 +300,7 @@ class SurveyResponseController extends Controller
 
             switch ($question->type) {
                 case 'multiple_choice':
+                case 'true_false':
                     $options = $question->options->pluck('id')->map(fn ($id) => (string) $id)->toArray();
                     $rules[$field] = ['required', Rule::in($options)];
                     $messages["{$field}.required"] = __('Selecciona una opción.');

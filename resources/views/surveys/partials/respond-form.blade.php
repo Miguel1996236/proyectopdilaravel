@@ -131,6 +131,7 @@
                 {{-- Cuerpo según tipo de pregunta --}}
                 @switch($question->type)
                     @case('multiple_choice')
+                    @case('true_false')
                         <div class="pl-4">
                             @foreach ($question->options as $option)
                                 <div class="custom-control custom-radio mb-2">

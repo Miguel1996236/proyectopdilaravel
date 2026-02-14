@@ -114,6 +114,8 @@ class ReminderController extends Controller
                     customMessage: $data['message'],
                     surveyLink: $surveyLink,
                     surveyTitle: $surveyTitle,
+                    senderName: $user->name,
+                    senderEmail: $user->email,
                 ));
                 $sentCount++;
             } catch (\Exception $e) {

@@ -11,11 +11,13 @@ use App\Models\QuizAiAnalysis;
 use App\Models\QuizInvitation;
 use App\Models\User;
 use App\Charts\DescriptiveBarChart;
+use App\Services\PdfChartService;
 use App\Services\QuizAnalyticsService;
 use ArielMejiaDev\LarapexCharts\DonutChart;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -27,6 +29,7 @@ class QuizController extends Controller
     protected const QUESTION_TYPE_LABELS = [
         'multiple_choice' => 'Opción múltiple',
         'multi_select' => 'Selección múltiple',
+        'true_false' => 'Verdadero / Falso',
         'scale' => 'Escala',
         'open_text' => 'Respuesta abierta',
         'numeric' => 'Respuesta numérica',
@@ -121,7 +124,7 @@ class QuizController extends Controller
                     'settings' => $this->extractTemplateQuestionSettings($questionData),
                 ]);
 
-                if (!empty($questionData['options']) && in_array($questionData['type'], ['multiple_choice', 'multi_select'], true)) {
+                if (!empty($questionData['options']) && in_array($questionData['type'], ['multiple_choice', 'multi_select', 'true_false'], true)) {
                     foreach ($questionData['options'] as $optionPosition => $optionData) {
                         $question->options()->create([
                             'label' => $optionData['label'],
@@ -330,7 +333,7 @@ class QuizController extends Controller
         ]);
     }
 
-    public function exportAnalysis(Quiz $quiz, QuizAnalyticsService $analyticsService)
+    public function exportAnalysis(Request $request, Quiz $quiz, QuizAnalyticsService $analyticsService, PdfChartService $pdfChartService)
     {
         $this->ensureQuizOwnership($quiz);
 
@@ -347,17 +350,53 @@ class QuizController extends Controller
         $quantitativeInsights = $analyticsService->buildQuantitativeInsights($quiz);
         $qualitativeInsights = $analyticsService->buildQualitativeInsights($quiz);
 
-        $pdf = Pdf::loadView('quizzes.analysis-pdf', [
-            'quiz' => $quiz,
-            'analysis' => $analysisRecord,
-            'analysisSummary' => $analysisSummary,
-            'quantitativeInsights' => $quantitativeInsights,
-            'qualitativeInsights' => $qualitativeInsights,
-        ])->setPaper('a4');
+        $pdfData = $this->buildPdfExportData($quiz, $analysisSummary, $quantitativeInsights, $qualitativeInsights);
+        $chartImages = extension_loaded('gd')
+            ? $pdfChartService->generateChartImages($quantitativeInsights)
+            : [];
+
+        $pdf = Pdf::loadView('quizzes.analysis-pdf', array_merge($pdfData, [
+            'chartImages' => $chartImages,
+        ]))->setPaper('a4');
 
         $filename = 'informe-' . Str::slug($quiz->title ?? 'encuesta') . '-' . now()->format('Ymd_His') . '.pdf';
 
         return $pdf->download($filename);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function buildPdfExportData(Quiz $quiz, array $analysisSummary, array $quantitativeInsights, array $qualitativeInsights): array
+    {
+        $totalResponses = $quiz->attempts->count();
+        $totalQuestions = $quiz->questions->count();
+
+        $scaleInsights = collect($quantitativeInsights)->filter(
+            fn ($i) => isset($i['average']) && in_array($i['type'] ?? '', ['scale', 'numeric'], true)
+        );
+        $generalAverage = $scaleInsights->isNotEmpty()
+            ? round($scaleInsights->avg('average'), 2)
+            : null;
+
+        $satisfactionLevel = match (true) {
+            $generalAverage === null => __('N/A'),
+            $generalAverage >= 4.0 => __('Alto'),
+            $generalAverage >= 2.5 => __('Medio'),
+            default => __('Bajo'),
+        };
+
+        return [
+            'quiz' => $quiz,
+            'analysis' => $quiz->analyses->first(),
+            'analysisSummary' => $analysisSummary,
+            'quantitativeInsights' => $quantitativeInsights,
+            'qualitativeInsights' => $qualitativeInsights,
+            'totalResponses' => $totalResponses,
+            'totalQuestions' => $totalQuestions,
+            'generalAverage' => $generalAverage,
+            'satisfactionLevel' => $satisfactionLevel,
+        ];
     }
 
     protected function ensureDefaultInvitation(Quiz $quiz): void
@@ -596,6 +635,7 @@ class QuizController extends Controller
             $charts[] = [
                 'chart' => $chart,
                 'question' => $question,
+                'question_id' => $config['question_id'] ?? null,
                 'type' => $type,
             ];
         }

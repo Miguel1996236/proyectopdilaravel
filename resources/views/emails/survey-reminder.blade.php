@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
     <meta name="supported-color-schemes" content="light" />
-    <title>{{ $customSubject ?? config('app.name', 'EduQuiz') }}</title>
+    <title>{{ $customSubject ?? 'EduQuiz' }}</title>
     <!--[if mso]>
     <noscript>
         <xml>
@@ -32,21 +32,20 @@
                 {{-- Container principal (600px max) --}}
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
 
-                    {{-- ========== HEADER ========== --}}
+                    {{-- ========== HEADER EDUQUIZ ========== --}}
                     <tr>
                         <td style="background: linear-gradient(135deg, #4e73df 0%, #2e59d9 100%); padding: 32px 40px; text-align: center;">
                             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                                 <tr>
                                     <td align="center">
-                                        {{-- Icono --}}
-                                        <div style="display: inline-block; width: 48px; height: 48px; line-height: 48px; border-radius: 12px; background-color: rgba(255,255,255,0.2); color: #ffffff; font-size: 22px; text-align: center; margin-bottom: 12px;">
-                                            &#128203;
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="center" style="font-size: 22px; font-weight: 700; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, Arial, sans-serif; letter-spacing: 0.02em;">
-                                        {{ config('app.name', 'EduQuiz') }}
+                                        {{-- Logo EduQuiz --}}
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
+                                            <tr>
+                                                <td align="center">
+                                                    <img src="{{ asset('images/eduquiz-logo.png') }}" alt="EduQuiz" width="200" height="56" style="display: block; max-width: 200px; height: auto; border: 0; outline: none; text-decoration: none;" />
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </td>
                                 </tr>
                                 @if ($surveyTitle)
@@ -139,7 +138,7 @@
                             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                                 <tr>
                                     <td align="center" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, Arial, sans-serif; font-size: 12px; color: #858796; line-height: 1.6;">
-                                        Este correo fue enviado por <strong>{{ config('app.name', 'EduQuiz') }}</strong>,
+                                        Este correo fue enviado por <strong>EduQuiz</strong>,
                                         una plataforma educativa de encuestas y evaluaciones.
                                     </td>
                                 </tr>
@@ -150,9 +149,19 @@
                                         Si no reconoces este correo, puedes ignorarlo con seguridad.
                                     </td>
                                 </tr>
+                                @if (!empty($senderName) || !empty($senderEmail))
+                                <tr>
+                                    <td align="center" style="padding-top: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, Arial, sans-serif; font-size: 12px; color: #5a5c69; line-height: 1.5;">
+                                        Enviado por: <strong>{{ $senderName ?? '—' }}</strong>
+                                        @if (!empty($senderEmail))
+                                            &lt;<a href="mailto:{{ $senderEmail }}" style="color: #4e73df; text-decoration: none;">{{ $senderEmail }}</a>&gt;
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endif
                                 <tr>
                                     <td align="center" style="padding-top: 16px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, Arial, sans-serif; font-size: 11px; color: #d1d3e2;">
-                                        &copy; {{ date('Y') }} {{ config('app.name', 'EduQuiz') }}. Todos los derechos reservados.
+                                        &copy; {{ date('Y') }} EduQuiz. Todos los derechos reservados.
                                     </td>
                                 </tr>
                             </table>

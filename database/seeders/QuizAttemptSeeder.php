@@ -80,6 +80,7 @@ class QuizAttemptSeeder extends Seeder
 
             switch ($question->type) {
                 case 'multiple_choice':
+                case 'true_false':
                     $answer = $this->createMultipleChoiceAnswer($attempt, $question);
                     break;
 
@@ -114,6 +115,8 @@ class QuizAttemptSeeder extends Seeder
         }
 
         $selectedOption = $options->random();
+        $hasCorrectOptions = $options->where('is_correct', true)->isNotEmpty();
+        $isCorrect = $hasCorrectOptions ? $selectedOption->is_correct : null;
 
         return [
             'attempt_id' => $attempt->id,
@@ -121,7 +124,7 @@ class QuizAttemptSeeder extends Seeder
             'question_option_id' => $selectedOption->id,
             'answer_text' => $selectedOption->label,
             'answer_number' => null,
-            'is_correct' => $selectedOption->is_correct,
+            'is_correct' => $isCorrect,
         ];
     }
 

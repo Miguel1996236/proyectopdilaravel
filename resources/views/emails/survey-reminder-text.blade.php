@@ -1,4 +1,4 @@
-{{ config('app.name', 'EduQuiz') }}
+EduQuiz
 ========================================
 
 {{ $customMessage }}
@@ -15,8 +15,12 @@ Si el enlace no funciona, copia y pega la dirección en tu navegador.
 @endif
 
 ----------------------------------------
-Este correo fue enviado por {{ config('app.name', 'EduQuiz') }}, una plataforma educativa de encuestas y evaluaciones.
+Este correo fue enviado por EduQuiz, una plataforma educativa de encuestas y evaluaciones.
 Recibes este mensaje porque un docente de la plataforma te incluyó como destinatario.
 Si no reconoces este correo, puedes ignorarlo con seguridad.
+@if (!empty($senderName) || !empty($senderEmail))
 
-© {{ date('Y') }} {{ config('app.name', 'EduQuiz') }}. Todos los derechos reservados.
+Enviado por: {{ $senderName ?? '—' }}@if (!empty($senderEmail)) ({{ $senderEmail }})@endif
+@endif
+
+© {{ date('Y') }} EduQuiz. Todos los derechos reservados.

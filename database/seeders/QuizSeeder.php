@@ -126,6 +126,22 @@ class QuizSeeder extends Seeder
                     ],
                 ],
                 [
+                    'title' => 'La derivada de x² es 2x. ¿Verdadero o Falso?',
+                    'type' => 'true_false',
+                    'options' => [
+                        ['label' => 'Verdadero', 'value' => 'true', 'is_correct' => true],
+                        ['label' => 'Falso', 'value' => 'false', 'is_correct' => false],
+                    ],
+                ],
+                [
+                    'title' => '¿Te gustaría que el curso incluya más ejercicios prácticos? (Verdadero = Sí, Falso = No)',
+                    'type' => 'true_false',
+                    'options' => [
+                        ['label' => 'Verdadero', 'value' => 'true', 'is_correct' => false],
+                        ['label' => 'Falso', 'value' => 'false', 'is_correct' => false],
+                    ],
+                ],
+                [
                     'title' => '¿Cuántas horas semanales dedicas al estudio de matemáticas?',
                     'type' => 'numeric',
                 ],
@@ -307,7 +323,7 @@ class QuizSeeder extends Seeder
             ]);
 
             // Crear opciones si las hay
-            if (isset($questionData['options']) && in_array($questionData['type'], ['multiple_choice', 'multi_select', 'scale'])) {
+            if (isset($questionData['options']) && in_array($questionData['type'], ['multiple_choice', 'multi_select', 'true_false', 'scale'])) {
                 foreach ($questionData['options'] as $optionPosition => $optionData) {
                     QuestionOption::create([
                         'question_id' => $question->id,

@@ -10,7 +10,12 @@
         })->toArray()
         : []);
 
-    if (empty($options) && in_array($type, ['multiple_choice', 'multi_select'], true)) {
+    if (empty($options) && $type === 'true_false') {
+        $options = [
+            ['label' => __('Verdadero'), 'value' => 'true', 'is_correct' => false],
+            ['label' => __('Falso'), 'value' => 'false', 'is_correct' => false],
+        ];
+    } elseif (empty($options) && in_array($type, ['multiple_choice', 'multi_select'], true)) {
         $options = [
             ['label' => '', 'value' => '', 'is_correct' => false],
             ['label' => '', 'value' => '', 'is_correct' => false],
@@ -41,8 +46,9 @@
     <div class="form-group col-md-4">
         <label for="question-type" class="font-weight-bold">{{ __('Tipo de pregunta') }}</label>
         <select name="type" id="question-type" class="form-control @error('type') is-invalid @enderror">
-            <option value="multiple_choice" @selected($type === 'multiple_choice')>{{ __('Opción múltiple (una correcta)') }}</option>
-            <option value="multi_select" @selected($type === 'multi_select')>{{ __('Selección múltiple (varias correctas)') }}</option>
+            <option value="multiple_choice" @selected($type === 'multiple_choice')>{{ __('Opción múltiple') }}</option>
+            <option value="multi_select" @selected($type === 'multi_select')>{{ __('Selección múltiple') }}</option>
+            <option value="true_false" @selected($type === 'true_false')>{{ __('Verdadero / Falso') }}</option>
             <option value="scale" @selected($type === 'scale')>{{ __('Escala (Likert)') }}</option>
             <option value="open_text" @selected($type === 'open_text')>{{ __('Respuesta abierta') }}</option>
             <option value="numeric" @selected($type === 'numeric')>{{ __('Respuesta numérica') }}</option>
@@ -50,6 +56,9 @@
         @error('type')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
+        <button type="button" class="btn btn-link btn-sm p-0 mt-1" data-toggle="modal" data-target="#question-type-guide-modal">
+            <i class="fas fa-info-circle"></i> {{ __('Ver guía completa') }}
+        </button>
     </div>
 
     <div class="form-group col-md-2">
@@ -63,15 +72,27 @@
     </div>
 </div>
 
-<div id="question-options-wrapper" class="{{ in_array($type, ['multiple_choice', 'multi_select'], true) ? '' : 'd-none' }}">
+{{-- Card de ayuda contextual según el tipo seleccionado --}}
+<div id="question-type-help-card" class="card border-info mb-3">
+    <div class="card-header bg-info text-white py-2">
+        <i class="fas fa-lightbulb mr-1"></i> {{ __('Ayuda: tipo de pregunta') }}
+    </div>
+    <div class="card-body py-3">
+        <div id="help-what-sees" class="mb-2"></div>
+        <div id="help-example" class="mb-2"></div>
+        <div id="help-evaluation" class="mb-0"></div>
+    </div>
+</div>
+
+<div id="question-options-wrapper" class="{{ in_array($type, ['multiple_choice', 'multi_select', 'true_false'], true) ? '' : 'd-none' }}">
     <div class="d-flex justify-content-between align-items-center">
         <label class="font-weight-bold mb-0">{{ __('Opciones de respuesta') }}</label>
         <button class="btn btn-sm btn-outline-secondary" id="add-option-btn">
             <i class="fas fa-plus mr-1"></i>{{ __('Agregar opción') }}
         </button>
     </div>
-    <p class="text-muted small mt-1">
-        {{ __('Marca las opciones correctas. Para preguntas de opción múltiple solo se permitirá una correcta.') }}
+    <p class="text-muted small mt-1" id="options-instruction-text">
+        {{ __('Marca la(s) opción(es) correcta(s) si la pregunta es evaluativa. Si es de encuesta, deja todas sin marcar.') }}
     </p>
 
     @error('options')
@@ -118,6 +139,74 @@
     <small class="text-muted">{{ __('Este texto aparecerá debajo de la pregunta como orientación adicional.') }}</small>
 </div>
 
+{{-- Modal guía completa de tipos de pregunta --}}
+<div class="modal fade" id="question-type-guide-modal" tabindex="-1" role="dialog" aria-labelledby="question-type-guide-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="question-type-guide-modal-label">
+                    <i class="fas fa-book mr-1"></i> {{ __('Guía de tipos de pregunta') }}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>{{ __('Tipo') }}</th>
+                                <th>{{ __('Qué ve el alumno') }}</th>
+                                <th>{{ __('Ejemplo') }}</th>
+                                <th>{{ __('Evaluación') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>{{ __('Opción múltiple') }}</strong></td>
+                                <td>{{ __('Varias opciones, solo 1 respuesta (radio)') }}</td>
+                                <td>{{ __('¿Cuál snack prefieres para la merienda?') }}</td>
+                                <td>{{ __('Con correcta → evaluativa; sin correcta → encuesta') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>{{ __('Selección múltiple') }}</strong></td>
+                                <td>{{ __('Varias opciones, varias respuestas (checkboxes)') }}</td>
+                                <td>{{ __('¿Qué actividades realizas en tu tiempo libre?') }}</td>
+                                <td>{{ __('Con correctas → evaluativa; sin correctas → encuesta') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>{{ __('Verdadero / Falso') }}</strong></td>
+                                <td>{{ __('2 opciones fijas: Verdadero / Falso') }}</td>
+                                <td>{{ __('La fotosíntesis ocurre en las plantas.') }}</td>
+                                <td>{{ __('Con correcta → evaluativa; sin correcta → encuesta') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>{{ __('Escala (Likert)') }}</strong></td>
+                                <td>{{ __('Escala numérica (ej. 1–5 o 1–7)') }}</td>
+                                <td>{{ __('Estoy satisfecho con la metodología del curso (1=En desacuerdo, 5=De acuerdo)') }}</td>
+                                <td>{{ __('Promedios, distribución, tendencias') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>{{ __('Respuesta abierta') }}</strong></td>
+                                <td>{{ __('Cuadro de texto libre') }}</td>
+                                <td>{{ __('¿Qué mejorarías del curso?') }}</td>
+                                <td>{{ __('Análisis de temas, IA, palabras clave') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>{{ __('Respuesta numérica') }}</strong></td>
+                                <td>{{ __('Campo numérico') }}</td>
+                                <td>{{ __('¿Cuántas horas dedicaste a estudiar esta semana?') }}</td>
+                                <td>{{ __('Promedio, min/max, distribución') }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <template id="option-template">
     <div class="card border option-row mb-2">
         <div class="card-body py-3">
@@ -156,7 +245,57 @@
         const addOptionBtn = document.getElementById('add-option-btn');
         const optionTemplate = document.getElementById('option-template');
 
+        const typeHelp = {
+            multiple_choice: {
+                whatSees: @json(__('Varias opciones, solo 1 respuesta (radio)')),
+                example: @json(__('¿Cuál snack prefieres para la merienda?')),
+                evaluation: @json(__('Con correcta → evaluativa; sin correcta → encuesta'))
+            },
+            multi_select: {
+                whatSees: @json(__('Varias opciones, varias respuestas (checkboxes)')),
+                example: @json(__('¿Qué actividades realizas en tu tiempo libre?')),
+                evaluation: @json(__('Con correctas → evaluativa; sin correctas → encuesta'))
+            },
+            true_false: {
+                whatSees: @json(__('2 opciones fijas: Verdadero / Falso')),
+                example: @json(__('La fotosíntesis ocurre en las plantas.')),
+                evaluation: @json(__('Con correcta → evaluativa; sin correcta → encuesta'))
+            },
+            scale: {
+                whatSees: @json(__('Escala numérica (ej. 1–5 o 1–7)')),
+                example: @json(__('Estoy satisfecho con la metodología del curso (1=En desacuerdo, 5=De acuerdo)')),
+                evaluation: @json(__('Promedios, distribución, tendencias'))
+            },
+            open_text: {
+                whatSees: @json(__('Cuadro de texto libre')),
+                example: @json(__('¿Qué mejorarías del curso?')),
+                evaluation: @json(__('Análisis de temas, IA, palabras clave'))
+            },
+            numeric: {
+                whatSees: @json(__('Campo numérico')),
+                example: @json(__('¿Cuántas horas dedicaste a estudiar esta semana?')),
+                evaluation: @json(__('Promedio, min/max, distribución'))
+            }
+        };
+
         let optionIndex = 0;
+
+        function updateHelpCard() {
+            const type = typeSelect ? typeSelect.value : 'multiple_choice';
+            const help = typeHelp[type] || typeHelp.multiple_choice;
+            const whatSeesEl = document.getElementById('help-what-sees');
+            const exampleEl = document.getElementById('help-example');
+            const evaluationEl = document.getElementById('help-evaluation');
+            if (whatSeesEl) {
+                whatSeesEl.innerHTML = '<strong>{{ __("Qué ve el alumno") }}:</strong> ' + (help.whatSees || '');
+            }
+            if (exampleEl) {
+                exampleEl.innerHTML = '<strong>{{ __("Ejemplo") }}:</strong> ' + (help.example || '');
+            }
+            if (evaluationEl) {
+                evaluationEl.innerHTML = '<strong>{{ __("Evaluación") }}:</strong> ' + (help.evaluation || '');
+            }
+        }
 
         function clearOptions() {
             if (!optionsContainer) {
@@ -178,7 +317,8 @@
 
         function toggleSections() {
             const type = typeSelect.value;
-            const requiresOptions = ['multiple_choice', 'multi_select'].includes(type);
+            const requiresOptions = ['multiple_choice', 'multi_select', 'true_false'].includes(type);
+            const isTrueFalse = type === 'true_false';
 
             if (optionsWrapper) {
                 optionsWrapper.classList.toggle('d-none', !requiresOptions);
@@ -189,17 +329,21 @@
             }
 
             if (addOptionBtn) {
-                addOptionBtn.classList.toggle('d-none', !requiresOptions);
+                addOptionBtn.classList.toggle('d-none', !requiresOptions || isTrueFalse);
             }
 
             if (!requiresOptions) {
                 clearOptions();
+            } else if (isTrueFalse) {
+                clearOptions();
+                addOption({label: '{{ __("Verdadero") }}', value: 'true', is_correct: false}, true);
+                addOption({label: '{{ __("Falso") }}', value: 'false', is_correct: false}, true);
             } else {
                 ensureDefaultOptions();
             }
         }
 
-        function addOption(defaults = {label: '', value: '', is_correct: false}) {
+        function addOption(defaults = {label: '', value: '', is_correct: false}, fixed = false) {
             if (!optionsContainer || !optionTemplate) {
                 return;
             }
@@ -209,6 +353,7 @@
             const labelInput = node.querySelector('.option-label');
             const valueInput = node.querySelector('.option-value');
             const correctInput = node.querySelector('.option-correct');
+            const removeBtn = row.querySelector('.remove-option-btn');
             const checkboxId = `option-correct-${Date.now()}-${optionIndex}`;
 
             row.dataset.index = optionIndex;
@@ -229,9 +374,15 @@
                 correctLabel.setAttribute('for', checkboxId);
             }
 
-            row.querySelector('.remove-option-btn').addEventListener('click', function () {
-                row.remove();
-            });
+            if (fixed) {
+                labelInput.readOnly = true;
+                valueInput.readOnly = true;
+                if (removeBtn) removeBtn.style.display = 'none';
+            } else {
+                removeBtn.addEventListener('click', function () {
+                    row.remove();
+                });
+            }
 
             optionsContainer.appendChild(node);
             optionIndex++;
@@ -245,15 +396,27 @@
         }
 
         toggleSections();
+        updateHelpCard();
 
         if (typeSelect) {
             typeSelect.addEventListener('change', function () {
                 toggleSections();
+                updateHelpCard();
             });
         }
 
         const existingOptions = @json($options);
-        if (Array.isArray(existingOptions) && existingOptions.length) {
+        const currentType = typeSelect ? typeSelect.value : 'multiple_choice';
+        if (currentType === 'true_false') {
+            if (Array.isArray(existingOptions) && existingOptions.length === 2) {
+                clearOptions();
+                existingOptions.forEach(function (item) {
+                    addOption(item, true);
+                });
+            } else {
+                toggleSections();
+            }
+        } else if (Array.isArray(existingOptions) && existingOptions.length) {
             existingOptions.forEach(function (item) {
                 addOption(item);
             });

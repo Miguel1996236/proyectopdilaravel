@@ -92,6 +92,7 @@
                                                     $typeLabels = [
                                                         'multiple_choice' => __('Opción múltiple'),
                                                         'multi_select' => __('Selección múltiple'),
+                                                        'true_false' => __('Verdadero / Falso'),
                                                         'scale' => __('Escala'),
                                                         'open_text' => __('Respuesta abierta'),
                                                         'numeric' => __('Respuesta numérica'),
