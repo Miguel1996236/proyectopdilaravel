@@ -10,8 +10,8 @@ use App\Models\Quiz;
 use App\Models\QuizAiAnalysis;
 use App\Models\QuizInvitation;
 use App\Models\User;
+use App\Charts\DescriptiveBarChart;
 use App\Services\QuizAnalyticsService;
-use ArielMejiaDev\LarapexCharts\BarChart;
 use ArielMejiaDev\LarapexCharts\DonutChart;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
@@ -541,6 +541,8 @@ class QuizController extends Controller
             $question = $config['question'] ?? __('Gráfico');
             $labels = $config['labels'] ?? [];
             $data = $config['data'] ?? [];
+            $xAxisTitle = $config['xAxisTitle'] ?? null;
+            $yAxisTitle = $config['yAxisTitle'] ?? null;
 
             if ($type === 'pie') {
                 $chart = new DonutChart();
@@ -551,7 +553,7 @@ class QuizController extends Controller
                     ->setDataset($data)
                     ->setColors(['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796']);
             } else {
-                $chart = new BarChart();
+                $chart = new DescriptiveBarChart();
                 $chart
                     ->setTitle($question)
                     ->setHeight(320)
@@ -562,7 +564,19 @@ class QuizController extends Controller
                             'data' => $data,
                         ],
                     ])
-                    ->setColors(['#4e73df']);
+                    ->setColors(['#4e73df'])
+                    ->setYAxisMin(0);
+
+                if ($type === 'horizontal_bar') {
+                    $chart->setHorizontal(true);
+                }
+
+                if ($xAxisTitle) {
+                    $chart->setXAxisTitle($xAxisTitle);
+                }
+                if ($yAxisTitle) {
+                    $chart->setYAxisTitle($yAxisTitle);
+                }
             }
 
             $charts[] = [

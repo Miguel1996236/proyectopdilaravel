@@ -195,16 +195,38 @@ class QuizAnalyticsService
         }
 
         $total = $values->count();
+        $minVal = (int) $values->min();
+        $maxVal = (int) $values->max();
 
-        $distribution = $values
-            ->groupBy(fn ($value) => (string) $value)
+        // Obtener rango esperado: para scale usar settings/opciones o 1-5; para numeric usar min-max de datos
+        $settings = $question->settings ?? [];
+        if ($question->type === 'scale') {
+            $optValues = $question->options->pluck('value')->filter()->map(fn ($v) => (int) $v);
+            $rangeMin = (int) ($settings['scale_min'] ?? ($optValues->isNotEmpty() ? $optValues->min() : 1));
+            $rangeMax = (int) ($settings['scale_max'] ?? ($optValues->isNotEmpty() ? $optValues->max() : max(5, $maxVal)));
+        } else {
+            $rangeMin = $minVal;
+            $rangeMax = $maxVal;
+        }
+
+        $grouped = $values
+            ->groupBy(fn ($value) => (string) ((int) $value))
             ->map(fn (Collection $items, $key) => [
                 'value' => (float) $key,
                 'count' => $items->count(),
                 'percentage' => $total > 0 ? round(($items->count() / $total) * 100, 2) : 0,
-            ])
-            ->values()
-            ->all();
+            ]);
+
+        // Rellenar todos los valores del rango en orden ascendente (1, 2, 3, 4, 5...)
+        $distribution = [];
+        for ($v = $rangeMin; $v <= $rangeMax; $v++) {
+            $item = $grouped->get((string) $v);
+            $distribution[] = [
+                'value' => (float) $v,
+                'count' => $item['count'] ?? 0,
+                'percentage' => $item['percentage'] ?? 0,
+            ];
+        }
 
         return [
             'question_id' => $question->id,
@@ -256,17 +278,26 @@ class QuizAnalyticsService
         if ($isNumeric) {
             $labels = collect($insight['distribution'] ?? [])->map(fn ($item) => (string) ($item['value'] ?? ''))->all();
             $data = collect($insight['distribution'] ?? [])->pluck('count')->all();
+            $xAxisTitle = __('Calificación');
+            $yAxisTitle = __('Número de respuestas');
+            $horizontal = false; // Escala numérica → columnas verticales
         } else {
             $labels = collect($insight['options'] ?? [])->pluck('label')->all();
             $data = collect($insight['options'] ?? [])->pluck('count')->all();
+            $longestLabel = collect($labels)->map(fn ($l) => mb_strlen($l))->max() ?? 0;
+            $horizontal = $longestLabel > 25; // Texto largo → barras horizontales
+            $xAxisTitle = $horizontal ? __('Número de respuestas') : __('Opción');
+            $yAxisTitle = $horizontal ? __('Opción') : __('Número de respuestas');
         }
 
         return [
             'question_id' => $insight['question_id'],
             'question' => $insight['question'],
-            'type' => 'bar',
+            'type' => $horizontal ? 'horizontal_bar' : 'bar',
             'labels' => $labels,
             'data' => $data,
+            'xAxisTitle' => $xAxisTitle,
+            'yAxisTitle' => $yAxisTitle,
         ];
     }
 }

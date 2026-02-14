@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Charts\DescriptiveLineChart;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\QuizInvitation;
@@ -252,14 +253,17 @@ class DashboardController extends Controller
             return null;
         }
 
-        $chart = (new LarapexChart())->lineChart();
+        $chart = new DescriptiveLineChart();
 
         $chart
+            ->setTitle($title)
             ->setHeight(300)
             ->setColors(['#4e73df'])
             ->setMarkers(['#2e59d9'], 7, 10)
             ->setXAxis($series['labels'])
-            ->addData($datasetLabel, $series['values']);
+            ->addData($datasetLabel, $series['values'])
+            ->setXAxisTitle(__('Período'))
+            ->setYAxisTitle($datasetLabel);
 
         return $chart;
     }

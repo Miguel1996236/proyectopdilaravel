@@ -321,6 +321,10 @@
                         maintainAspectRatio: false,
                         scales: {
                             yAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: '{{ __('Número de usos') }}',
+                                },
                                 ticks: {
                                     beginAtZero: true,
                                     precision: 0,
@@ -334,6 +338,10 @@
                                 }
                             }],
                             xAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: '{{ __('Código de invitación') }}',
+                                },
                                 gridLines: { display: false },
                             }]
                         },
@@ -369,9 +377,17 @@
                         maintainAspectRatio: false,
                         scales: {
                             xAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: '{{ __('Fecha') }}',
+                                },
                                 gridLines: { display: false, drawBorder: false },
                             }],
                             yAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: '{{ __('Intentos completados') }}',
+                                },
                                 ticks: {
                                     beginAtZero: true,
                                     precision: 0,

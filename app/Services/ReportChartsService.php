@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Charts\DescriptiveLineChart;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
@@ -106,13 +107,16 @@ class ReportChartsService
             return null;
         }
 
-        $chart = (new LarapexChart())->lineChart();
+        $chart = new DescriptiveLineChart();
         $chart
+            ->setTitle($title)
             ->setHeight(300)
             ->setColors(['#4e73df'])
             ->setMarkers(['#2e59d9'], 7, 10)
             ->setXAxis($series['labels'])
-            ->addData($datasetLabel, $series['values']);
+            ->addData($datasetLabel, $series['values'])
+            ->setXAxisTitle(__('Período'))
+            ->setYAxisTitle($datasetLabel);
 
         return $chart;
     }
