@@ -16,6 +16,7 @@
             'stats' => $stats,
             'roleCounts' => $roleCounts,
             'recentUsers' => $recentUsers,
+            'adoption' => $adoption ?? [],
             'charts' => $charts ?? [],
         ])
     @elseif ($role === User::ROLE_TEACHER)

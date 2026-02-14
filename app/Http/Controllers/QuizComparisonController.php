@@ -29,7 +29,49 @@ class QuizComparisonController extends Controller
             ->orderBy('title')
             ->get();
 
-        return view('comparisons.index', compact('quizzes'));
+        $comparisons = QuizComparison::query()
+            ->where('user_id', $user->id)
+            ->with([
+                'quizA' => fn ($q) => $q->withCount('attempts'),
+                'quizB' => fn ($q) => $q->withCount('attempts'),
+            ])
+            ->orderByDesc('updated_at')
+            ->paginate(10);
+
+        return view('comparisons.index', compact('quizzes', 'comparisons'));
+    }
+
+    /**
+     * Ver una comparación guardada anteriormente.
+     */
+    public function show(QuizComparison $comparison): View
+    {
+        $this->ensureTeacherOrAdmin();
+        $user = Auth::user();
+
+        if ($comparison->user_id !== $user->id) {
+            abort(403);
+        }
+
+        $comparison->load(['quizA', 'quizB']);
+        $quizA = $comparison->quizA;
+        $quizB = $comparison->quizB;
+
+        if (! $quizA || ! $quizB) {
+            abort(404, __('Una o ambas encuestas de esta comparación ya no existen.'));
+        }
+
+        return view('comparisons.result', [
+            'quizA' => $quizA,
+            'quizB' => $quizB,
+            'statsA' => $comparison->stats_a ?? [],
+            'statsB' => $comparison->stats_b ?? [],
+            'insightsA' => $comparison->insights_a ?? [],
+            'insightsB' => $comparison->insights_b ?? [],
+            'aiAnalysis' => $comparison->ai_analysis,
+            'aiError' => $comparison->error_message,
+            'comparison' => $comparison,
+        ]);
     }
 
     public function compare(Request $request, QuizAnalyticsService $analyticsService): View|RedirectResponse

@@ -50,6 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Comparación de encuestas
     Route::get('comparisons', [QuizComparisonController::class, 'index'])->name('comparisons.index');
+    Route::get('comparisons/{comparison}', [QuizComparisonController::class, 'show'])->name('comparisons.show');
     Route::post('comparisons', [QuizComparisonController::class, 'compare'])->name('comparisons.compare');
     Route::post('comparisons/ai', [QuizComparisonController::class, 'analyzeWithAI'])->name('comparisons.ai');
 

@@ -109,14 +109,14 @@
     <div class="col-xl-4 col-lg-5 mb-4">
         <div class="card shadow">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">{{ __('Fuentes de participación') }}</h6>
+                <h6 class="m-0 font-weight-bold text-primary">{{ __('Estado de encuestas') }}</h6>
             </div>
             <div class="card-body">
                 <div class="chart-pie">
                     @if (! empty($charts['participation']))
                         {!! $charts['participation']->container() !!}
                     @else
-                        <p class="text-muted small mb-0">{{ __('Sin datos disponibles para las fuentes de participación.') }}</p>
+                        <p class="text-muted small mb-0">{{ __('Sin datos disponibles.') }}</p>
                     @endif
                 </div>
             </div>
@@ -126,28 +126,22 @@
     <div class="col-xl-8 col-lg-7 mb-4">
         <div class="card shadow h-100">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">{{ __('Progreso de iniciativas') }}</h6>
+                <h6 class="m-0 font-weight-bold text-primary">{{ __('Adopción de la plataforma') }}</h6>
             </div>
             <div class="card-body">
-                <h4 class="small font-weight-bold">{{ __('Migración de cursos') }} <span class="float-right">40%</span></h4>
-                <div class="progress mb-4">
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-
-                <h4 class="small font-weight-bold">{{ __('Lanzamiento de encuestas piloto') }} <span class="float-right">60%</span></h4>
-                <div class="progress mb-4">
-                    <div class="progress-bar bg-warning" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-
-                <h4 class="small font-weight-bold">{{ __('Integración de IA en reportes') }} <span class="float-right">75%</span></h4>
-                <div class="progress mb-4">
-                    <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-
-                <h4 class="small font-weight-bold">{{ __('Capacitación docente') }} <span class="float-right">Completo</span></h4>
-                <div class="progress">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
+                @foreach ($adoption ?? [] as $item)
+                    @php
+                        $pct = (int) ($item['pct'] ?? 0);
+                        $barClass = $pct >= 100 ? 'bg-success' : ($pct >= 66 ? 'bg-primary' : ($pct >= 33 ? 'bg-warning' : 'bg-danger'));
+                    @endphp
+                    <h4 class="small font-weight-bold">{{ $item['label'] }} <span class="float-right">{{ $pct >= 100 ? __('Completo') : $pct . '%' }}</span></h4>
+                    <div class="progress {{ $loop->last ? '' : 'mb-4' }}">
+                        <div class="progress-bar {{ $barClass }}" role="progressbar" style="width: {{ min(100, $pct) }}%" aria-valuenow="{{ $pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                @endforeach
+                @if (empty($adoption))
+                    <p class="text-muted small mb-0">{{ __('Aún no hay datos suficientes.') }}</p>
+                @endif
             </div>
         </div>
     </div>

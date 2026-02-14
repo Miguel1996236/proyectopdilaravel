@@ -4,7 +4,7 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div></div>
         <a href="{{ route('comparisons.index') }}" class="btn btn-outline-secondary btn-sm">
-            <i class="fas fa-arrow-left mr-1"></i>{{ __('Nueva comparación') }}
+            <i class="fas fa-arrow-left mr-1"></i>{{ __('Volver al listado') }}
         </a>
     </div>
 

@@ -53,11 +53,50 @@ class DashboardController extends Controller
 
         $attemptSeries = $this->buildAttemptSeries(QuizAttempt::query());
 
+        $totalSurveys = $stats['surveys'];
+        $closedSurveys = Quiz::where('status', 'closed')->count();
+        $surveysWithAttempts = Quiz::whereHas('attempts')->count();
+        $surveysWithAnalysis = Quiz::where('status', 'closed')->whereNotNull('analysis_completed_at')->count();
+        $teachersTotal = $roleCounts['docente'] ?? 0;
+        $teachersActive = $teachersTotal > 0
+            ? User::where('role', User::ROLE_TEACHER)->whereHas('quizzes')->count()
+            : 0;
+        $invitesActive = $stats['invites'];
+        $invitesWithUse = $invitesActive > 0
+            ? QuizInvitation::where('is_active', true)->where('uses_count', '>', 0)->count()
+            : 0;
+
+        $adoption = [
+            [
+                'label' => __('Encuestas con participación'),
+                'pct' => $totalSurveys > 0 ? min(100, (int) round(($surveysWithAttempts / $totalSurveys) * 100)) : 0,
+            ],
+            [
+                'label' => __('Informes IA generados'),
+                'pct' => $closedSurveys > 0 ? min(100, (int) round(($surveysWithAnalysis / $closedSurveys) * 100)) : 0,
+            ],
+            [
+                'label' => __('Docentes activos'),
+                'pct' => $teachersTotal > 0 ? min(100, (int) round(($teachersActive / $teachersTotal) * 100)) : 0,
+            ],
+            [
+                'label' => __('Uso de invitaciones'),
+                'pct' => $invitesActive > 0 ? min(100, (int) round(($invitesWithUse / $invitesActive) * 100)) : 0,
+            ],
+        ];
+
+        $statusCounts = [
+            Quiz::where('status', 'draft')->count(),
+            Quiz::where('status', 'published')->count(),
+            Quiz::where('status', 'closed')->count(),
+        ];
+
         return view('dashboard', [
             'role' => User::ROLE_ADMIN,
             'stats' => $stats,
             'roleCounts' => $roleCounts,
             'recentUsers' => $recentUsers,
+            'adoption' => $adoption,
             'charts' => array_filter([
                 'usage' => $this->buildLineChart(
                     $attemptSeries,
@@ -78,13 +117,9 @@ class DashboardController extends Controller
                     __('Distribución por rol')
                 ),
                 'participation' => $this->buildDonutChart(
-                    [
-                        __('Invitaciones directas'),
-                        __('Docentes compartieron'),
-                        __('Accesos externos'),
-                    ],
-                    [55, 30, 15],
-                    __('Fuentes de participación')
+                    [__('Borradores'), __('Publicadas'), __('Cerradas')],
+                    $statusCounts,
+                    __('Estado de encuestas')
                 ),
             ]),
         ]);
