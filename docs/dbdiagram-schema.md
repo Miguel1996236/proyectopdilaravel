@@ -1,274 +1,206 @@
-# Esquema de base de datos – EduQuiz (DBML para dbdiagram.io)
-
-Copia todo el bloque de código que está debajo de la línea "```dbml" y pégalo en [dbdiagram.io](https://dbdiagram.io) para generar el diagrama.
-
----
-
-```dbml
 // ============================================
-// EduQuiz – Esquema derivado de migraciones Laravel
+// EduQuiz – DBML optimizado para dbdiagram.io
 // ============================================
 
 Table users {
-  id bigint [pk, increment, note: 'PK']
-  name varchar(255) [not null]
-  email varchar(255) [unique, not null]
-  email_verified_at timestamp [null]
-  role varchar(20) [default: 'estudiante', note: 'administrador, docente, estudiante']
-  password varchar(255) [not null]
-  remember_token varchar(100) [null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
-  
-  Note: 'Usuarios del sistema (admin, docentes, estudiantes)'
-}
-
-Table password_reset_tokens {
-  email varchar(255) [pk]
-  token varchar(255) [not null]
-  created_at timestamp [null]
-}
-
-Table sessions {
-  id varchar(255) [pk]
-  user_id bigint [null, ref: > users.id]
-  ip_address varchar(45) [null]
-  user_agent text [null]
-  payload text [not null]
-  last_activity int [not null]
-}
-
-Table cache {
-  key varchar(255) [pk]
-  value longtext [not null]
-  expiration int [not null]
-}
-
-Table cache_locks {
-  key varchar(255) [pk]
-  owner varchar(255) [not null]
-  expiration int [not null]
-}
-
-Table jobs {
   id bigint [pk, increment]
-  queue varchar(255) [not null]
-  payload longtext [not null]
-  attempts smallint [not null]
-  reserved_at int [null]
-  available_at int [not null]
-  created_at int [not null]
-}
-
-Table job_batches {
-  id varchar(255) [pk]
-  name varchar(255) [not null]
-  total_jobs int [not null]
-  pending_jobs int [not null]
-  failed_jobs int [not null]
-  failed_job_ids longtext [not null]
-  options longtext [null]
-  cancelled_at int [null]
-  created_at int [not null]
-  finished_at int [null]
-}
-
-Table failed_jobs {
-  id bigint [pk, increment]
-  uuid varchar(255) [unique, not null]
-  connection text [not null]
-  queue text [not null]
-  payload longtext [not null]
-  exception longtext [not null]
-  failed_at timestamp [not null]
+  name varchar
+  email varchar [unique]
+  email_verified_at timestamp
+  role varchar [default: 'estudiante']
+  password varchar
+  remember_token varchar
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table quizzes {
   id bigint [pk, increment]
-  user_id bigint [not null, ref: > users.id]
-  title varchar(255) [not null]
-  description text [null]
-  status varchar(20) [default: 'draft', note: 'draft, published, closed']
-  opens_at timestamp [null]
-  closes_at timestamp [null]
-  max_attempts smallint [default: 1]
-  require_login boolean [default: true]
-  target_audience varchar(50) [default: 'all']
-  randomize_questions boolean [default: false]
-  theme_color varchar(7) [default: '#4e73df']
-  settings json [null]
-  analysis_requested_at timestamp [null]
-  analysis_completed_at timestamp [null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
-  deleted_at timestamp [null]
-  
-  Note: 'Encuestas/Cuestionarios creados por docentes'
+  user_id bigint
+  title varchar
+  description text
+  status varchar [default: 'draft']
+  opens_at timestamp
+  closes_at timestamp
+  max_attempts int
+  require_login bool
+  target_audience varchar
+  randomize_questions bool
+  theme_color varchar
+  settings text
+  analysis_requested_at timestamp
+  analysis_completed_at timestamp
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
 }
 
 Table questions {
   id bigint [pk, increment]
-  quiz_id bigint [not null, ref: > quizzes.id]
-  title varchar(255) [not null]
-  description text [null]
-  type varchar(30) [default: 'multiple_choice', note: 'multiple_choice, multi_select, scale, open_text, numeric, true_false']
-  position int [default: 1]
-  weight smallint [default: 1]
-  settings json [null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
-  deleted_at timestamp [null]
+  quiz_id bigint
+  title varchar
+  description text
+  type varchar
+  position int
+  weight int
+  settings text
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
 }
 
 Table question_options {
   id bigint [pk, increment]
-  question_id bigint [not null, ref: > questions.id]
-  label varchar(255) [not null]
-  description text [null]
-  value varchar(255) [null]
-  is_correct boolean [default: false]
-  position int [default: 1]
-  metadata json [null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
+  question_id bigint
+  label varchar
+  description text
+  value varchar
+  is_correct bool
+  position int
+  metadata text
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table quiz_invitations {
   id bigint [pk, increment]
-  quiz_id bigint [not null, ref: > quizzes.id]
-  created_by bigint [null, ref: > users.id]
-  code varchar(20) [unique, not null]
-  label varchar(255) [null]
-  max_uses int [null]
-  uses_count int [default: 0]
-  expires_at timestamp [null]
-  is_active boolean [default: true]
-  metadata json [null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
+  quiz_id bigint
+  created_by bigint
+  code varchar [unique]
+  label varchar
+  max_uses int
+  uses_count int
+  expires_at timestamp
+  is_active bool
+  metadata text
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table quiz_attempts {
   id bigint [pk, increment]
-  quiz_id bigint [not null, ref: > quizzes.id]
-  invitation_id bigint [null, ref: > quiz_invitations.id]
-  user_id bigint [null, ref: > users.id]
-  participant_name varchar(255) [null]
-  participant_email varchar(255) [null]
-  status varchar(20) [default: 'pending', note: 'pending, in_progress, completed, cancelled']
-  score decimal(8,2) [null]
-  max_score decimal(8,2) [null]
-  started_at timestamp [null]
-  completed_at timestamp [null]
-  metadata json [null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
+  quiz_id bigint
+  invitation_id bigint
+  user_id bigint
+  participant_name varchar
+  participant_email varchar
+  status varchar
+  score decimal
+  max_score decimal
+  started_at timestamp
+  completed_at timestamp
+  metadata text
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table quiz_answers {
   id bigint [pk, increment]
-  attempt_id bigint [not null, ref: > quiz_attempts.id]
-  question_id bigint [not null, ref: > questions.id]
-  question_option_id bigint [null, ref: > question_options.id]
-  answer_text text [null]
-  answer_number decimal(10,3) [null]
-  is_correct boolean [null]
-  answer_meta json [null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
-  
-  indexes {
-    (attempt_id, question_id)
-  }
+  attempt_id bigint
+  question_id bigint
+  question_option_id bigint
+  answer_text text
+  answer_number decimal
+  is_correct bool
+  answer_meta text
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table quiz_ai_analyses {
   id bigint [pk, increment]
-  quiz_id bigint [not null, ref: > quizzes.id]
-  status varchar(50) [default: 'pending']
-  summary text [null]
-  recommendations text [null]
-  quantitative_insights json [null]
-  qualitative_themes json [null]
-  raw_response json [null]
-  error_message text [null]
-  started_at timestamp [null]
-  completed_at timestamp [null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
-  
-  indexes {
-    (quiz_id, status)
-  }
+  quiz_id bigint
+  status varchar
+  summary text
+  recommendations text
+  quantitative_insights text
+  qualitative_themes text
+  raw_response text
+  error_message text
+  started_at timestamp
+  completed_at timestamp
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table student_groups {
   id bigint [pk, increment]
-  user_id bigint [not null, ref: > users.id]
-  name varchar(255) [not null]
-  description text [null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
-  
-  Note: 'Grupos de estudiantes (dueño: docente)'
+  user_id bigint
+  name varchar
+  description text
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table student_group_members {
   id bigint [pk, increment]
-  student_group_id bigint [not null, ref: > student_groups.id]
-  name varchar(255) [not null]
-  email varchar(255) [not null]
-  user_id bigint [null, ref: > users.id]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
-  
-  indexes {
-    (student_group_id, email) [unique]
-  }
+  student_group_id bigint
+  name varchar
+  email varchar
+  user_id bigint
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table email_reminders {
   id bigint [pk, increment]
-  user_id bigint [not null, ref: > users.id]
-  quiz_id bigint [null, ref: > quizzes.id]
-  subject varchar(255) [not null]
-  message text [not null]
-  recipients_count int [default: 0]
-  sent_at timestamp [null]
-  status varchar(50) [default: 'sent']
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
+  user_id bigint
+  quiz_id bigint
+  subject varchar
+  message text
+  recipients_count int
+  sent_at timestamp
+  status varchar
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table quiz_comparisons {
   id bigint [pk, increment]
-  user_id bigint [not null, ref: > users.id]
-  quiz_a_id bigint [not null, ref: > quizzes.id]
-  quiz_b_id bigint [not null, ref: > quizzes.id]
-  ai_analysis longtext [null]
-  stats_a json [null]
-  stats_b json [null]
-  insights_a json [null]
-  insights_b json [null]
-  error_message text [null]
-  analyzed_at timestamp [null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
-  
-  indexes {
-    (user_id, quiz_a_id, quiz_b_id) [unique]
-  }
+  user_id bigint
+  quiz_a_id bigint
+  quiz_b_id bigint
+  ai_analysis text
+  stats_a text
+  stats_b text
+  insights_a text
+  insights_b text
+  error_message text
+  analyzed_at timestamp
+  created_at timestamp
+  updated_at timestamp
 }
-```
 
----
 
-## Cómo usarlo en dbdiagram.io
+// ============================================
+// RELACIONES (mejor declararlas así)
+// ============================================
 
-1. Entra en **https://dbdiagram.io**
-2. Crea un nuevo diagrama o abre uno existente.
-3. En el panel izquierdo (código DBML), **borra** el contenido de ejemplo.
-4. **Pega** todo el código que está entre \`\`\`dbml y \`\`\` (sin incluir esas líneas si el editor no las acepta; en ese caso pega solo las líneas de `Table` y `Ref`).
-5. El diagrama se generará automáticamente.
+Ref: quizzes.user_id > users.id
 
-Si dbdiagram.io no reconoce algún tipo (por ejemplo `longtext`), cámbialo por `text`. Las referencias `ref: > tabla.id` ya indican las relaciones para dibujar las líneas entre tablas.
+Ref: questions.quiz_id > quizzes.id
+Ref: question_options.question_id > questions.id
+
+Ref: quiz_invitations.quiz_id > quizzes.id
+Ref: quiz_invitations.created_by > users.id
+
+Ref: quiz_attempts.quiz_id > quizzes.id
+Ref: quiz_attempts.invitation_id > quiz_invitations.id
+Ref: quiz_attempts.user_id > users.id
+
+Ref: quiz_answers.attempt_id > quiz_attempts.id
+Ref: quiz_answers.question_id > questions.id
+Ref: quiz_answers.question_option_id > question_options.id
+
+Ref: quiz_ai_analyses.quiz_id > quizzes.id
+
+Ref: student_groups.user_id > users.id
+Ref: student_group_members.student_group_id > student_groups.id
+Ref: student_group_members.user_id > users.id
+
+Ref: email_reminders.user_id > users.id
+Ref: email_reminders.quiz_id > quizzes.id
+
+Ref: quiz_comparisons.user_id > users.id
+Ref: quiz_comparisons.quiz_a_id > quizzes.id
+Ref: quiz_comparisons.quiz_b_id > quizzes.id
